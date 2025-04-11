@@ -67,7 +67,7 @@ void ANPCBaseStateEnemy::OnEnemyDead(AActor* InAttackTarget)
 UNPCBaseStateEnemyDataAsset* ANPCBaseStateEnemy::GetDataAsset()
 {
 	if (!NPCEnemyStateDataAsset) return nullptr;
-	return NPCEnemyStateDataAsset;
+		return NPCEnemyStateDataAsset;
 }
 
 void ANPCBaseStateEnemy::BeginPlay()
