@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AI/Manager/Spline/MySpline.h"
 #include "AI/NPC/NPCBaseStateEnemy/NPCBaseStateEnemy.h"
-#include "Components/SplineComponent.h"
 #include "NPCBaseStateSplineEnemy.generated.h"
+
+
 
 UCLASS()
 class LGUEDK_API ANPCBaseStateSplineEnemy : public ANPCBaseStateEnemy
@@ -16,54 +18,16 @@ public:
 
 	ANPCBaseStateSplineEnemy();
 
-protected:
-
-	virtual void BeginPlay() override;
-
-public:
-
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable)
-	FVector GetRightPointLocation();
-
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "Spline")
+	AMySpline* GetMySpline() const;
+	
 protected:
 
-	UPROPERTY()
-	USplineComponent* SplineComponent;
-
-	UPROPERTY()
-	TArray<FVector> SplinePoints;
-
-private:
+	UPROPERTY(EditAnywhere, Category = "Spline")
+	AMySpline* MySpline;
 	
-	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "AI|Spline Setting",meta = (AllowPrivateAccess = "true"))
-	bool bPingPong = false;
-
-	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "AI|Spline Setting",meta = (AllowPrivateAccess = "true"))
-	bool bDrawDebug;
-
-	UPROPERTY()
-	int32 CurrentPointIndex = 0;
-
-	UPROPERTY()
-	int32 MaxIndex;
-
-	UPROPERTY()
-	bool bMovingForward = true;
-	
-	UPROPERTY()
-	bool bWasAtFirstPoint = false;
-	UPROPERTY()
-	bool bWasAtLastPoint = false;
-
-	UFUNCTION()
-	void UpdatePointsIndex();
-
-	UFUNCTION()
-	void CheckPointsDistance();
-
-	UFUNCTION()
-	void DrawDebugSplinePoints();
+	virtual void BeginPlay() override;
 
 };
