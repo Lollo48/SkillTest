@@ -36,7 +36,13 @@ void ANPCBaseController::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	InitializeBlackboardValues();
+	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [this]()
+	{
+		InitializeController();
+		
+		InitializeBlackboardValues();
 
-	CustomController();
+		CustomController();
+		
+	}));
 }

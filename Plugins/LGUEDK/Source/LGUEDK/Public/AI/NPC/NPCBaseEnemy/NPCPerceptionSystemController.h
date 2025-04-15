@@ -76,6 +76,8 @@ protected:
 	
 	virtual void InitializeBlackboardValues() override;
 
+	virtual void InitializeController() override {Super::InitializeController();}
+
 	virtual void CustomController() override{Super::CustomController();};
 	
 	UFUNCTION()

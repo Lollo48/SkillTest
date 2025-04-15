@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AI/Enumerators/EEnemyType.h"
-#include "AI/EQS/EQS_Manager.h"
 #include "GameFramework/Actor.h"
 #include "FlowAttackManager.generated.h"
 

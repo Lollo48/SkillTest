@@ -25,6 +25,10 @@ public:
 
 	virtual void SetStateAsDead(AActor* InAttackTarget) override;
 
+	void SetStateAsFlying();
+
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	
 	virtual void BeginPlay() override;
@@ -32,6 +36,8 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override ;
 	
 	virtual void InitializeBlackboardValues() override;
+
+	virtual void InitializeController() override;
 
 	virtual void HandleSight(AActor* Actor, FAIStimulus Stimulus) override ;
 	

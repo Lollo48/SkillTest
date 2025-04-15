@@ -8,7 +8,6 @@
 
 ADragonBoss::ADragonBoss()
 {
-	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ADragonBoss::OnEnemyPassive()
@@ -19,6 +18,12 @@ void ADragonBoss::OnEnemyPassive()
 void ADragonBoss::OnEnemyPatrolling()
 {
 	Super::OnEnemyPatrolling();
+	ABossController* AIController = Cast<ABossController>(GetController());
+	if (!AIController)
+	{
+		return;
+	};
+	AIController->SetStateAsPatrolling();
 }
 
 void ADragonBoss::OnEnemyInvestigating()
@@ -42,13 +47,17 @@ void ADragonBoss::OnEnemyDead(AActor* InAttackTarget)
 	};
 	
 	AIController->SetStateAsDead(InAttackTarget);
-	GetMesh()->SetCollisionProfileName("Ragdoll", true);
-	GetMesh()->SetSimulatePhysics(true);
+}
+
+void ADragonBoss::OnEnemyFlying()
+{
+	SetEnemyState(EEnemyState::Flying);
 }
 
 void ADragonBoss::BeginPlay()
 {
 	Super::BeginPlay();
+	EnableEntity();
 }
 
 void ADragonBoss::Init()
@@ -59,5 +68,6 @@ void ADragonBoss::Init()
 void ADragonBoss::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 }
 

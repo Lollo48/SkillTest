@@ -51,6 +51,8 @@ protected:
 	
 	virtual void InitializeBlackboardValues() override { Super::InitializeBlackboardValues(); };
 
+	virtual void InitializeController() override {Super::InitializeController();}
+
 	virtual void CustomController() override{Super::CustomController();};
 	
 	virtual void HandleSight(AActor* Actor, FAIStimulus Stimulus) override { Super::HandleSight(Actor, Stimulus); };

@@ -65,8 +65,8 @@ public:
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "On Enemy Dead"))
 	virtual void OnEnemyDead(AActor* InAttackTarget);
 	
-	UFUNCTION(BlueprintCallable)
-	UNPCBaseStateEnemyDataAsset* GetDataAsset();
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	UNPCBaseStateEnemyDataAsset* GetDataAsset() const;
 
 	UFUNCTION(BlueprintCallable)
 	EEnemyType GetEnemyType() const { return NPCEnemyStateDataAsset->MyEnemyType; }

@@ -36,6 +36,8 @@ protected:
 	virtual void CustomController() {};
 	
 	virtual void BeginPlay() override;
+
+	virtual void InitializeController(){}
 	
 };
 

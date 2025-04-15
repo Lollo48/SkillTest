@@ -4,28 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "AI/NPC/NPCBaseStateEnemy/NPCBaseStateEnemy.h"
+#include "AI/NPC/NPCBaseStateSplineEnemy/NPCBaseStateSplineEnemy.h"
+#include "Components/SplineComponent.h"
 #include "Data/BossDataAsset.h"
 #include "DragonBoss.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(
-	FStateHit);
-
 UCLASS()
-class SKILLTESTPROJECT_API ADragonBoss : public ANPCBaseStateEnemy
+class SKILLTESTPROJECT_API ADragonBoss : public ANPCBaseStateSplineEnemy
 {
 	GENERATED_BODY()
 
 public:
+	
 	ADragonBoss();
-
-	UPROPERTY(BlueprintAssignable)
-	FStateHit OnStateHit;
 
 	virtual void OnEnemyPassive() override;
 	virtual void OnEnemyPatrolling() override;
 	virtual void OnEnemyInvestigating() override;
 	virtual void OnEnemyAttack(AActor* InAttackTarget) override;
 	virtual void OnEnemyDead(AActor* InAttackTarget) override;
+	void OnEnemyFlying();
 
 protected:
 	
@@ -35,7 +33,7 @@ protected:
 
 	UPROPERTY()
 	UBossDataAsset* BossDataAsset;
-
+	
 public:
 	virtual void Tick(float DeltaTime) override;
 

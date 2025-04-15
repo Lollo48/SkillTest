@@ -66,10 +66,24 @@ void ABossController::SetStateAsDead(AActor* InAttackTarget)
 		BossEntity->OnEnemyAttack(InAttackTarget);
 }
 
+void ABossController::SetStateAsFlying()
+{
+	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
+		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Flying));
+
+	if (BossEntity != nullptr)
+		BossEntity->OnEnemyFlying();
+}
+
+void ABossController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void ABossController::BeginPlay()
 {
 	Super::BeginPlay();
-	BossEntity = Cast<ADragonBoss>(GetControlledPawn());
+	SetStateAsPatrolling();
 }
 
 void ABossController::OnPossess(APawn* InPawn)
@@ -82,10 +96,16 @@ void ABossController::InitializeBlackboardValues()
 	Super::InitializeBlackboardValues();
 
 	if (!Blackboard)return;
-
-	UBossDataAsset* EnemyDataAsset = Cast<UBossDataAsset>(BossEntity->GetDataAsset()); 
-	if (!EnemyDataAsset)return;
+	if (!BossEntity)return;
 	
+	UBossDataAsset* EnemyDataAsset =Cast<UBossDataAsset>(BossEntity->GetDataAsset()); 
+	if (!EnemyDataAsset)
+	{
+		UE_LOG(LogTemp, Error, TEXT("BossEntity->GetDataAsset() returned nullptr!"));
+		return;
+	}
+
+	Blackboard->SetValueAsEnum("EnemyState",uint8(EEnemyState::Patrolling));
 	Blackboard->SetValueAsVector("InitialPosition",BossEntity->GetActorLocation());
 	Blackboard->SetValueAsFloat(TEXT("SearchRadius"), EnemyDataAsset->SearchRadius);
 	Blackboard->SetValueAsFloat(TEXT("TimeBeforeNextStep"), EnemyDataAsset->TimeBeforeNextStep);
@@ -93,6 +113,12 @@ void ABossController::InitializeBlackboardValues()
 	Blackboard->SetValueAsObject(TEXT("AttackTarget"), nullptr);
 	Blackboard->SetValueAsFloat(TEXT("MaxAttackRadius"), EnemyDataAsset->MaxAttackRadius);
 	Blackboard->SetValueAsFloat(TEXT("MinAttackRadius"), EnemyDataAsset->MinAttackRadius);
+}
+
+void ABossController::InitializeController()
+{
+	Super::InitializeController();
+	BossEntity = Cast<ADragonBoss>(GetControlledPawn());
 }
 
 void ABossController::HandleSight(AActor* Actor, FAIStimulus Stimulus)
@@ -114,7 +140,7 @@ void ABossController::HandleSight(AActor* Actor, FAIStimulus Stimulus)
 
 		if (BossEntity->GetState() == EEnemyState::Patrolling || BossEntity->GetState() == EEnemyState::Passive)
 		{
-			BossEntity->SetAttackTarget(Actor);
+			SetStateAsAttacking(Actor);
 		}
 	}
 	else

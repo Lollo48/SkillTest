@@ -39,7 +39,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Patrolling",meta = ( EditCondition = "bCanStatePatrolling",EditConditionHides))
 	float SearchRadius = 200;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Patrolling", meta = (ClampMin = "0", ClampMax = "10", UIMin = "0", UIMax = "10", EditCondition = "bCanStatePatrolling",EditConditionHides))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Patrolling", meta = (ClampMin = "0", ClampMax = "100", UIMin = "0", UIMax = "100", EditCondition = "bCanStatePatrolling",EditConditionHides))
 	float TimeBeforeNextStep = 5;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Patrolling", meta = ( EditCondition = "bCanStatePatrolling",EditConditionHides))

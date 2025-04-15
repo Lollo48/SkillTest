@@ -21,9 +21,7 @@ void ANPCBase::BeginPlay()
 {
 	Super::BeginPlay();
 	Init();
-
-	DisableEntity();
-	EnableEntityEffectBP();
+	
 }
 
 void ANPCBase::EnableEntity()

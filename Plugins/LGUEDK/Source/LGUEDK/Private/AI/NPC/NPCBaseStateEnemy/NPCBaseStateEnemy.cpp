@@ -64,10 +64,15 @@ void ANPCBaseStateEnemy::OnEnemyDead(AActor* InAttackTarget)
 	DisableEntityEffectBP();
 }
 
-UNPCBaseStateEnemyDataAsset* ANPCBaseStateEnemy::GetDataAsset()
+UNPCBaseStateEnemyDataAsset* ANPCBaseStateEnemy::GetDataAsset() const
 {
-	if (!NPCEnemyStateDataAsset) return nullptr;
-		return NPCEnemyStateDataAsset;
+	if (!NPCEnemyStateDataAsset)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NPCEnemyStateDataAsset is nullptr in %s"), *GetName());
+		return nullptr;
+	}
+
+	return NPCEnemyStateDataAsset;
 }
 
 void ANPCBaseStateEnemy::BeginPlay()

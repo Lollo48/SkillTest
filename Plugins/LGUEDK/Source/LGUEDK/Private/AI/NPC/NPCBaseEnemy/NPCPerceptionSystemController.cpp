@@ -34,7 +34,6 @@ void ANPCPerceptionSystemController::SetStateAsPatrolling()
 void ANPCPerceptionSystemController::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ANPCPerceptionSystemController::OnPossess(APawn* InPawn)
