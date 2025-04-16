@@ -16,6 +16,10 @@ void ANPCBaseStateSplineEnemy::BeginPlay()
 void ANPCBaseStateSplineEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (MySpline == nullptr)return;
+
+	if (MySpline->GetSplineMode() == ESplineMode::SplineModeB)
+		MySpline->FollowSplinePath(DeltaTime,GetDataAsset()->WalkSpeed);
 }
 
 AMySpline* ANPCBaseStateSplineEnemy::GetMySpline() const

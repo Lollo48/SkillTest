@@ -3,6 +3,9 @@
 
 #include "AI/Manager/Spline/MySpline.h"
 
+#include "VectorTypes.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Utility/LGDebug.h"
 
 
@@ -15,34 +18,46 @@ AMySpline::AMySpline()
 	SplineComponent->SetupAttachment(RootComponent);
 }
 
+void AMySpline::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (bDrawDebug)
+		DrawDebugSplinePoints();
+}
+
+void AMySpline::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (!CurrentUser)return;
+
+	if (SplineMode == ESplineMode::SplineModeA)
+		CheckPointsDistance();
+}
+
 void AMySpline::InitSpline()
 {
-	CurrentSplinePoints = SplineComponent->GetNumberOfSplinePoints();
-	CurrentSplineIndex = 0;
-	
+	if (SplineMode == ESplineMode::SplineModeB)
+	{
+		if (ACharacter* Character = Cast<ACharacter>(CurrentUser))
+		{
+			CharacterMovementComponent = Character->GetCharacterMovement();
+		}
+		SplineLength = SplineComponent->GetSplineLength();
+		Direction = 1.0f;
+		StopTimer = StopDelay;
+		CurrentSplineIndex = 0;
+		//LGDebug::Log("SplineLength: " + FString::SanitizeFloat(SplineLength), true);
+	}
+	else
+	{
+		CurrentSplinePoints = SplineComponent->GetNumberOfSplinePoints();
+		CurrentSplineIndex = 0;
+	}
+
 	OnInitSpline.Broadcast();
 	InitSplineBP();
-}
-
-void AMySpline::ReachStartSplinePoint()
-{
-	LGDebug::Log("ReachStartSplinePoint",true);
-	OnReachStartSplinePoint.Broadcast();
-	ReachStartSplinePointBP();
-}
-
-void AMySpline::ReachEndSplinePoint()
-{
-	LGDebug::Log("ReachEndSplinePoint",true);
-	OnReachEndSplinePoint.Broadcast();
-	ReachEndSplinePointBP();
-}
-
-void AMySpline::ReachSplinePoint()
-{
-	LGDebug::Log("ReachSplinePoint",true);
-	OnReachSplinePoint.Broadcast();
-	ReachSplinePointBP();
 }
 
 FVector AMySpline::GetRightPointAtSplineIndex()
@@ -59,22 +74,6 @@ FVector AMySpline::GetRightPointAtSplineIndex()
 	//LGDebug::Log("CurrentSplineIndex: " + FString::FromInt(CurrentSplineIndex), true);
 	
 	return CurrentSplinePointLocation;
-}
-
-void AMySpline::FollowSplinePath(float DeltaTime, float Speed)
-{
-	const float MoveStep = Speed * DeltaTime;
-	
-
-}
-
-void AMySpline::BeginPlay()
-{
-	Super::BeginPlay();
-	InitSpline();
-
-	if (bDrawDebug)
-		DrawDebugSplinePoints();
 }
 
 void AMySpline::UpdateSplineIndex()
@@ -107,13 +106,12 @@ void AMySpline::UpdateSplineIndex()
 
 void AMySpline::CheckPointsDistance()
 {
-	FVector CurrentLocation = CurrentUser ->GetActorLocation();
 	//LGDebug::Log("TargetPoint: " + CurrentSplinePointLocation.ToString(), true);
 	//LGDebug::Log("CurrentLocation: " + CurrentLocation.ToString(), true);
-
-	//float Distance = FVector::Dist(TargetPoint,CurrentLocation);
+	//float Distance = FVector::Dist(CurrentSplinePointLocation,CurrentLocation);
 	//LGDebug::Log("CurrentLocation: " + FString::FromInt(Distance), true);
-
+	
+	FVector CurrentLocation = CurrentUser ->GetActorLocation();
 	if (FVector::Dist(CurrentLocation, CurrentSplinePointLocation) <= Tolerance && bIsWaitingAtPoint)
 	{
 		if (CurrentSplineIndex == 0 && !bWasAtFirstPoint)
@@ -134,8 +132,9 @@ void AMySpline::CheckPointsDistance()
 			ReachEndSplinePoint();
 			bWasAtLastPoint = true;
 		}
-		else
+		else if (CurrentSplineIndex != CurrentSplinePoints || CurrentSplineIndex != 0)
 			ReachSplinePoint();
+		
 		//LGDebug::Log("ARRIVATO AL PUNTO", true);
 		//bIsWaitingAtPoint = true;
 		//CurrentWaitTimer = WaitAtPointDuration;
@@ -145,13 +144,102 @@ void AMySpline::CheckPointsDistance()
 	}
 }
 
-void AMySpline::Tick(float DeltaSeconds)
+void AMySpline::FollowSplinePath(float DeltaTime, float Speed)
 {
-	Super::Tick(DeltaSeconds);
-
-	if (!CurrentUser)return;
+	if (!CharacterMovementComponent || !CurrentUser || !SplineComponent) return;
 	
-	CheckPointsDistance();
+	SplineLength = SplineComponent->GetSplineLength();
+	
+	if (bStopAtExtremes && StopTimer > 0.0f)
+	{
+		StopTimer -= DeltaTime;
+		
+		if (!bMovingForward && StopTimer <= 0.2f)
+		{
+			FVector VelocityDirection = SplineComponent->GetTangentAtDistanceAlongSpline(DistanceAlongSpline - 1, ESplineCoordinateSpace::World).GetSafeNormal();
+			CharacterMovementComponent->Velocity = VelocityDirection * Speed  * Direction;
+			FRotator TargetRotation = CharacterMovementComponent->Velocity.Rotation();
+			FRotator CurrentRotation = CurrentUser->GetActorRotation();
+			FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, StopDelay);
+			CurrentUser->SetActorRotation(NewRotation);
+		}
+		return;
+	}
+	
+	DistanceAlongSpline += Direction * Speed * DeltaTime;
+	DistanceAlongSpline = FMath::Clamp(DistanceAlongSpline, 0.0f, SplineLength);
+	
+	FVector DesiredLocation = SplineComponent->GetLocationAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
+	FVector DesiredTangent = SplineComponent->GetTangentAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
+	DesiredTangent = DesiredTangent.GetSafeNormal() * Direction;
+	
+	FRotator TargetRotation = DesiredTangent.Rotation();
+	TargetRotation.Pitch = 0.0f;
+	TargetRotation.Roll = 0.0f;
+
+	FRotator CurrentRotation = CurrentUser->GetActorRotation();
+	FRotator SmoothedRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, RotationSpeed);
+
+	CurrentUser->SetActorLocation(DesiredLocation + FVector(0, 0, OffsetZ));
+	CurrentUser->SetActorRotation(SmoothedRotation);
+	
+	CharacterMovementComponent->Velocity = DesiredTangent * Speed;
+
+	
+	if (bMovingForward)
+	{
+		if (DistanceAlongSpline >= SplineLength)
+		{
+			ReachEndSplinePoint();
+
+			if (bPingPong)
+			{
+				Direction = -1.0f;
+				bMovingForward = false;
+				DistanceAlongSpline = SplineLength;
+			}
+			if (bStopAtExtremes)
+				StopTimer = StopDelay;
+		}
+	}
+	else
+	{
+		if (DistanceAlongSpline <= 0.0f)
+		{
+			ReachStartSplinePoint();
+
+			if (bPingPong)
+			{
+				Direction = 1.0f;
+				bMovingForward = true;
+				DistanceAlongSpline = 0.0f;
+			}
+
+			if (bStopAtExtremes)
+				StopTimer = StopDelay;
+		}
+	}
+}
+
+void AMySpline::ReachStartSplinePoint()
+{
+	LGDebug::Log("ReachStartSplinePoint",true);
+	OnReachStartSplinePoint.Broadcast();
+	ReachStartSplinePointBP();
+}
+
+void AMySpline::ReachEndSplinePoint()
+{
+	LGDebug::Log("ReachEndSplinePoint",true);
+	OnReachEndSplinePoint.Broadcast();
+	ReachEndSplinePointBP();
+}
+
+void AMySpline::ReachSplinePoint()
+{
+	LGDebug::Log("ReachSplinePoint",true);
+	OnReachSplinePoint.Broadcast();
+	ReachSplinePointBP();
 }
 
 void AMySpline::DrawDebugSplinePoints()    
@@ -171,4 +259,5 @@ void AMySpline::DrawDebugSplinePoints()
 	}
 	
 }
+
 

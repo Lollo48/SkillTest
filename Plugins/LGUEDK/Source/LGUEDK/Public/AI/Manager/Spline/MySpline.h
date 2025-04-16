@@ -3,8 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AI/Enumerators/Spline/SplineMode.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "MySpline.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInitSpline);
@@ -30,10 +32,13 @@ public:
 	FOnReachSplinePoint OnReachSplinePoint;
 
 	UFUNCTION(BlueprintCallable,Category = "Spline")
-	void Initialize(AActor* InUsedActor = nullptr) { CurrentUser = InUsedActor; }
+	void Initialize(AActor* InUsedActor = nullptr) { CurrentUser = InUsedActor; InitSpline(); }
 
 	UFUNCTION(BlueprintCallable,BlueprintPure,Category = "Spline")
 	USplineComponent* GetSplineComponent() const { return SplineComponent; }
+
+	UFUNCTION(BlueprintCallable,BlueprintPure,Category = "Spline")
+	ESplineMode GetSplineMode() const { return SplineMode; }
 	
 	UFUNCTION(BlueprintCallable,Category = "Spline")
 	virtual void InitSpline();
@@ -80,19 +85,34 @@ protected:
 private:
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
+	ESplineMode SplineMode;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeA"))
 	float Tolerance = 600.0f;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
 	bool bPingPong = false;
 
-	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeA"))
 	bool bWantsContinueEvent = false;
-	
+
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
-	bool bDrawDebug;
+	bool bStopAtExtremes = false;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeB && bStopAtExtremes"))
+	float StopDelay = 1.0f;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeB"))
+	float OffsetZ = 390.f;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeB"))
+	float RotationSpeed = 5.0f;
 
 	UPROPERTY()
 	AActor* CurrentUser;
+
+	UPROPERTY()
+	UCharacterMovementComponent* CharacterMovementComponent;
 
 	UPROPERTY()
 	FVector CurrentSplinePointLocation;
@@ -104,8 +124,13 @@ private:
 	int32 CurrentSplineIndex = 0;
 
 	UPROPERTY()
+	float SplineLength;
+
+	UPROPERTY()
+	float Direction;
+
+	UPROPERTY()
 	bool bMovingForward = true;
-	
 	UPROPERTY()
 	bool bWasAtFirstPoint = false;
 	UPROPERTY()
@@ -114,10 +139,20 @@ private:
 	UPROPERTY()
 	bool bIsWaitingAtPoint = true;
 
+	UPROPERTY()
+	float DistanceAlongSpline = 0.0f;
+	FVector LastLocation = FVector::ZeroVector;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
+	bool bDrawDebug;
+	
+	float StopTimer = 0.0f;
+
 	UFUNCTION()
 	void UpdateSplineIndex();
 
 	UFUNCTION()
 	void DrawDebugSplinePoints();
+	
 
 };
