@@ -87,18 +87,20 @@ void AMySpline::UpdateSplineIndex()
 		else if (bPingPong)
 		{
 			//LGDebug::Log("PingPong: invert to backward", true);
+			CurrentSplineIndex = CurrentSplinePoints - 2;
 			bMovingForward = false;
 		}
 	}
 	else
 	{
-		if (CurrentSplineIndex > 0)
+		if (CurrentSplineIndex > 0 )
 		{
 			CurrentSplineIndex--;
 		}
 		else if (bPingPong)
 		{
 			//LGDebug::Log("PingPong: invert to forward", true);
+			CurrentSplineIndex = 1;
 			bMovingForward = true;
 		}
 	}
@@ -129,6 +131,8 @@ void AMySpline::CheckPointsDistance()
 			{
 				bWasAtFirstPoint = false;
 			}
+			if (bWantsToStartFromBeginning)
+				CurrentSplineIndex = -1;
 			ReachEndSplinePoint();
 			bWasAtLastPoint = true;
 		}
@@ -200,6 +204,10 @@ void AMySpline::FollowSplinePath(float DeltaTime, float Speed)
 			}
 			if (bStopAtExtremes)
 				StopTimer = StopDelay;
+
+			if (bWantsToStartFromBeginning)
+				DistanceAlongSpline = 0.0f;
+				
 		}
 	}
 	else

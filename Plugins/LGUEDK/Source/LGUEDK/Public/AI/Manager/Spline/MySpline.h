@@ -93,10 +93,13 @@ private:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
 	bool bPingPong = false;
 
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
+	bool bWantsToStartFromBeginning = false;
+	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeA"))
 	bool bWantsContinueEvent = false;
 
-	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeB"))
 	bool bStopAtExtremes = false;
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeB && bStopAtExtremes"))
