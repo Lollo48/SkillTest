@@ -26,7 +26,7 @@ AMySpline* ANPCBaseStateSplineEnemy::GetMySpline() const
 {
 	if (MySpline == nullptr)return nullptr;
 	
-		return MySpline;
+	return MySpline;
 }
 
 

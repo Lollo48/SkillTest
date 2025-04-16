@@ -40,7 +40,9 @@ public:
 
 	void SetMovementSpeed(EMovementSpeed MovementSpeed) const;
 
+	UFUNCTION(BlueprintCallable , meta = (DisplayName = "Enemy State"))
 	EEnemyState GetState() const { return CurrentState; }
+	UFUNCTION(BlueprintCallable , meta = (DisplayName = "Enemy State"))
 	void SetEnemyState(const EEnemyState NewState) { CurrentState = NewState; }
 	
 protected:

@@ -60,19 +60,14 @@ void ABossController::SetStateAsDead(AActor* InAttackTarget)
 {
 	Super::SetStateAsDead(InAttackTarget);
 	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Attacking));
+		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Dead));
 
-	if (BossEntity != nullptr)
-		BossEntity->OnEnemyAttack(InAttackTarget);
 }
 
 void ABossController::SetStateAsFlying()
 {
 	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
 		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Flying));
-
-	if (BossEntity != nullptr)
-		BossEntity->OnEnemyFlying();
 }
 
 void ABossController::Tick(float DeltaTime)

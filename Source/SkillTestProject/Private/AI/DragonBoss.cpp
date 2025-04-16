@@ -18,12 +18,6 @@ void ADragonBoss::OnEnemyPassive()
 void ADragonBoss::OnEnemyPatrolling()
 {
 	Super::OnEnemyPatrolling();
-	ABossController* AIController = Cast<ABossController>(GetController());
-	if (!AIController)
-	{
-		return;
-	};
-	AIController->SetStateAsPatrolling();
 }
 
 void ADragonBoss::OnEnemyInvestigating()
@@ -54,10 +48,40 @@ void ADragonBoss::OnEnemyFlying()
 	SetEnemyState(EEnemyState::Flying);
 }
 
+void ADragonBoss::ReachStartSplinePoint()
+{
+	bWantsFly = FMath::RandBool();
+	ReachStartSplinePointBP();
+}
+
+void ADragonBoss::ReachEndSplinePoint()
+{
+	if (!bWantsFly)return;
+	
+	ABossController* AIController = Cast<ABossController>(GetController());
+	if (!AIController)
+	{
+		return;
+	};
+	SetEnemyState(EEnemyState::Flying);
+	AIController->SetStateAsFlying();
+	ReachEndSplinePointBP();
+	bWantsFly = false;
+}
+
+void ADragonBoss::ReachSplinePoint()
+{
+	ReachSplinePointBP();
+}
+
 void ADragonBoss::BeginPlay()
 {
 	Super::BeginPlay();
 	EnableEntity();
+
+	MySpline->OnReachSplinePoint.AddDynamic(this, &ADragonBoss::ReachSplinePoint);
+	MySpline->OnReachStartSplinePoint.AddDynamic(this, &ADragonBoss::ReachStartSplinePoint);
+	MySpline->OnReachEndSplinePoint.AddDynamic(this, &ADragonBoss::ReachEndSplinePoint);
 }
 
 void ADragonBoss::Init()
@@ -67,7 +91,9 @@ void ADragonBoss::Init()
 
 void ADragonBoss::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	if (GetState()== EEnemyState::Flying)
+		return;
 	
+	Super::Tick(DeltaTime);
 }
 
