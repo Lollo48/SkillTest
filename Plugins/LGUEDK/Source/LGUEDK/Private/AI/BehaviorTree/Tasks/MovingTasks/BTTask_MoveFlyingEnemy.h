@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "BTTask_MoveFlyingEnemy.generated.h"
 
 /**
@@ -31,4 +32,10 @@ private:
 	float AcceptanceRadius = 5.0f;  
 	
 	FVector TargetLocation;
+
+	UPROPERTY()
+	UCharacterMovementComponent* MovementComp;
+
+	UPROPERTY()
+	APawn* Entity;
 };

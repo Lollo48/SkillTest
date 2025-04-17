@@ -52,6 +52,10 @@ void ADragonBoss::OnEnemyFlying()
 void ADragonBoss::ReachStartSplinePoint()
 {
 	ReachStartSplinePointBP();
+	UCharacterMovementComponent* MovementComp = this->GetCharacterMovement();
+	if (!MovementComp)return;
+
+	MovementComp->GravityScale = 1.f;
 	if (!bWantsFly)return;
 	bWantsFly = true;
 }
@@ -70,6 +74,11 @@ void ADragonBoss::ReachEndSplinePoint()
 	AIController->UpdateBBMovementActionState(EMovementActionState::Flying);
 	SetMovementActionState(EMovementActionState::Flying);
 	bWantsFly = false;
+	
+	UCharacterMovementComponent* MovementComp = this->GetCharacterMovement();
+	if (!MovementComp)return;
+
+	MovementComp->GravityScale = 0.f;
 }
 
 void ADragonBoss::ReachSplinePoint()

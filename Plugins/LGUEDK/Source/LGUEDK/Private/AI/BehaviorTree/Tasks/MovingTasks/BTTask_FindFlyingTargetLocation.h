@@ -87,6 +87,8 @@ private:
 
 	bool bCanExplore;
 
+	FVector CurrentHitLocation;
+
 	UPROPERTY(EditAnywhere, Category = "Flying|Settings")
 	bool bDebug = false;
 

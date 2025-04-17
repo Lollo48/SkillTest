@@ -29,16 +29,16 @@ EBTNodeResult::Type UBTTask_MoveFlyingEnemy::ExecuteTask(UBehaviorTreeComponent&
 		return EBTNodeResult::Failed; 
 	}
 
-	APawn* Enemy = Controller->GetPawn();
-	if (!Enemy)
+	Entity = Controller->GetPawn();
+	if (!Entity)
 	{
 		FinishLatentTask(OwnerComp,EBTNodeResult::Failed);
 		return EBTNodeResult::Failed; 
 	}
 	
-	if (ACharacter* Character = Cast<ACharacter>(Enemy))
+	if (ACharacter* Character = Cast<ACharacter>(Entity))
 	{
-		UCharacterMovementComponent* MovementComp = Character->GetCharacterMovement();
+		MovementComp = Character->GetCharacterMovement();
 		if (!MovementComp)
 		{
 			FinishLatentTask(OwnerComp,EBTNodeResult::Failed);
@@ -58,19 +58,10 @@ EBTNodeResult::Type UBTTask_MoveFlyingEnemy::ExecuteTask(UBehaviorTreeComponent&
 
 void UBTTask_MoveFlyingEnemy::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	AAIController* Controller = OwnerComp.GetAIOwner();
-	if (!Controller) return;
-
-	APawn* Enemy = Controller->GetPawn();
-	if (!Enemy) return;
+	FVector CurrentLocation = Entity->GetActorLocation();
 	
-	FVector CurrentLocation = Enemy->GetActorLocation();
 	
-	FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation,TargetLocation,DeltaSeconds,CharacterSpeed);
-	
-	Enemy->SetActorLocation(NewLocation);
-	
-	if (FVector::Dist(NewLocation, TargetLocation) <= AcceptanceRadius)
+	if (FVector::Dist(TargetLocation, TargetLocation) <= AcceptanceRadius)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
