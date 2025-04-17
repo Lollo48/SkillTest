@@ -3,21 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BTTask_GetFlyingPointBase.h"
+#include "BTTask_FindFlyingTargetLocation.h"
 #include "BTTask_GetFlyingPointOverPlayer.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LGUEDK_API UBTTask_GetFlyingPointOverPlayer : public UBTTask_GetFlyingPointBase
+class LGUEDK_API UBTTask_GetFlyingPointOverPlayer : public UBTTask_FindFlyingTargetLocation
 {
 	GENERATED_BODY()
 
 protected:
 	
 	explicit UBTTask_GetFlyingPointOverPlayer(FObjectInitializer const& ObjectInitializer);
-	virtual FVector GetTargetLocation(UBehaviorTreeComponent& OwnerComp, APawn* AIPawn,FVector& Direction,float SearchRadius) override;
+	virtual FVector TryFindFlyingTargetLocation(UBehaviorTreeComponent& OwnerComp, APawn* AIPawn,FVector& Direction,float SearchRadius) override;
 
 private:
 	

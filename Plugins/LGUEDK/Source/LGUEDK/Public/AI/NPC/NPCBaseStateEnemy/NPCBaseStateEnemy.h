@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AI/Enumerators/ActionState/MovementActionState.h"
 #include "AI/NPC/NPCBaseEnemy/NPCBaseEnemy.h"
 #include "AI/NPC/NPCData/NPCBaseStateEnemyDataAsset.h"
 #include "NPCBaseStateEnemy.generated.h"
@@ -70,6 +71,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	EEnemyType GetEnemyType() const { return NPCEnemyStateDataAsset->MyEnemyType; }
+
+	UFUNCTION(BlueprintCallable,Category = "AI|FlyingState")
+	EMovementActionState GetMovementActionState() const { return MovementActionState; }
+
+	UFUNCTION(BlueprintCallable,Category = "AI|FlyingState")
+	void SetMovementActionState(EMovementActionState InMovementActionState) { MovementActionState = InMovementActionState; }
 	
 	UFUNCTION(BlueprintCallable)
 	void SetAttackTarget(AActor* Target) { AttackTarget = Target; }
@@ -84,6 +91,9 @@ protected:
 	
 	UPROPERTY()
 	UNPCBaseStateEnemyDataAsset* NPCEnemyStateDataAsset;
+
+	UPROPERTY()
+	EMovementActionState MovementActionState = EMovementActionState::Walking;
 
 	virtual void BeginPlay() override;
 

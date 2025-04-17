@@ -19,55 +19,68 @@ ABossController::ABossController()
 void ABossController::SetStateAsPassive()
 {
 	Super::SetStateAsPassive();
-	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Passive));
+	
+	if (!Blackboard)return;
+	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Passive));
 
-	if (BossEntity != nullptr)
-		BossEntity->OnEnemyPassive();
+	if (!BossEntity)return;
+	BossEntity->OnEnemyPassive();
 }
 
 void ABossController::SetStateAsPatrolling()
 {
 	Super::SetStateAsPatrolling();
-	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Patrolling));
+	
+	if (!Blackboard)return;
+	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Patrolling));
 
-	if (BossEntity != nullptr)
-		BossEntity->OnEnemyPatrolling();
+	if (!BossEntity)return;
+	BossEntity->OnEnemyPatrolling();
 }
 
 void ABossController::SetStateAsInvestigating()
 {
 	Super::SetStateAsInvestigating();
-	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Investigating));
+	
+	if (!Blackboard)return;
+	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Investigating));
 
-	if (BossEntity != nullptr)
-		BossEntity->OnEnemyInvestigating();
+	if (!BossEntity)return;
+	BossEntity->OnEnemyInvestigating();
 }
 
 void ABossController::SetStateAsAttacking(AActor* InAttackTarget)
 {
 	Super::SetStateAsAttacking(InAttackTarget);
-	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Attacking));
+	
+	if (!Blackboard)return;
+	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Attacking));
 
-	if (BossEntity != nullptr)
-		BossEntity->OnEnemyAttack(InAttackTarget);
+	if (!BossEntity)return;
+	BossEntity->OnEnemyAttack(InAttackTarget);
 }
 
 void ABossController::SetStateAsDead(AActor* InAttackTarget)
 {
 	Super::SetStateAsDead(InAttackTarget);
-	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Dead));
+	if (!Blackboard)return;
+	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Dead));
 
 }
 
 void ABossController::SetStateAsFlying()
 {
-	if (UBlackboardComponent* BlackboardComp = GetBlackboardComponent())
-		BlackboardComp->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Flying));
+	if (!Blackboard)return;
+	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Flying));
+
+	if (!BossEntity)return;
+	BossEntity->OnEnemyFlying();
+}
+
+void ABossController::UpdateBBMovementActionState(EMovementActionState InMovementActionState)
+{
+	if (!Blackboard)return;
+	Blackboard->SetValueAsEnum(TEXT("MovementActionState"), uint8(InMovementActionState));
 }
 
 void ABossController::Tick(float DeltaTime)
@@ -101,6 +114,7 @@ void ABossController::InitializeBlackboardValues()
 	}
 
 	Blackboard->SetValueAsEnum("EnemyState",uint8(EEnemyState::Patrolling));
+	Blackboard->SetValueAsEnum("MovementActionState",uint8(EMovementActionState::Walking));
 	Blackboard->SetValueAsVector("InitialPosition",BossEntity->GetActorLocation());
 	Blackboard->SetValueAsFloat(TEXT("SearchRadius"), EnemyDataAsset->SearchRadius);
 	Blackboard->SetValueAsFloat(TEXT("TimeBeforeNextStep"), EnemyDataAsset->TimeBeforeNextStep);

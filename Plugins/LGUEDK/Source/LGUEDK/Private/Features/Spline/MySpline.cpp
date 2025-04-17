@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/Manager/Spline/MySpline.h"
+#include "Features/Spline/MySpline.h"
 
 #include "VectorTypes.h"
 #include "GameFramework/Character.h"

@@ -27,6 +27,8 @@ public:
 
 	void SetStateAsFlying();
 
+	void UpdateBBMovementActionState(EMovementActionState InMovementActionState);
+
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:

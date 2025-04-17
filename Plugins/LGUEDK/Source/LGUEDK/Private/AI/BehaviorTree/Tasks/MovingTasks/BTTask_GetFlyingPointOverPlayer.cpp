@@ -11,7 +11,7 @@ UBTTask_GetFlyingPointOverPlayer::UBTTask_GetFlyingPointOverPlayer(FObjectInitia
 	NodeName = "Get Flying Point Over Player";
 }
 
-FVector UBTTask_GetFlyingPointOverPlayer::GetTargetLocation(UBehaviorTreeComponent& OwnerComp, APawn* AIPawn,FVector& Direction,float SearchRadius)
+FVector UBTTask_GetFlyingPointOverPlayer::TryFindFlyingTargetLocation(UBehaviorTreeComponent& OwnerComp, APawn* AIPawn,FVector& Direction,float SearchRadius)
 {
 	if (!AIPawn) { return FVector::ZeroVector; }
 

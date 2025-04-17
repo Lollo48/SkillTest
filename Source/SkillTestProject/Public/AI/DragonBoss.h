@@ -4,9 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AI/Enumerators/ActionState/FlyingActionState.h"
-#include "AI/NPC/NPCBaseStateEnemy/NPCBaseStateEnemy.h"
 #include "AI/NPC/NPCBaseStateSplineEnemy/NPCBaseStateSplineEnemy.h"
-#include "Components/SplineComponent.h"
 #include "Data/BossDataAsset.h"
 #include "DragonBoss.generated.h"
 
@@ -40,7 +38,7 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category = "AI|FlyingState")
 	void SetFlyingActionState(EFlyingActionState InFlyingActionState) { FlyingActionState = InFlyingActionState; }
-
+	
 protected:
 
 	UPROPERTY()

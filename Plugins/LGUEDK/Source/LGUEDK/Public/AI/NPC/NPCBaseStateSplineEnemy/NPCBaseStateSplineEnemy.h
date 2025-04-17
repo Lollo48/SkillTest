@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AI/Manager/Spline/MySpline.h"
+#include "Features/Spline/MySpline.h"
 #include "AI/NPC/NPCBaseStateEnemy/NPCBaseStateEnemy.h"
 #include "NPCBaseStateSplineEnemy.generated.h"
 
