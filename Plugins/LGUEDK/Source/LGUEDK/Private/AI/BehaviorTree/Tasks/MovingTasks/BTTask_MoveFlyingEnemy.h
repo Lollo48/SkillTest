@@ -25,11 +25,14 @@ protected:
 	
 private:
 
-	UPROPERTY(EditAnywhere, Category = "Blackboard")
+	UPROPERTY(EditAnywhere, Category = "AI|Blackboard")
 	FBlackboardKeySelector TargetLocationKey;
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
-	float AcceptanceRadius = 5.0f;  
+	UPROPERTY(EditAnywhere, Category = "AI|Movement")
+	float AcceptanceRadius = 5.0f;
+
+	UPROPERTY(EditAnywhere, Category = "AI|Settings")
+	bool bDebug;
 	
 	FVector TargetLocation;
 

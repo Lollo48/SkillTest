@@ -10,6 +10,7 @@ ANPCBaseStateSplineEnemy::ANPCBaseStateSplineEnemy()
 void ANPCBaseStateSplineEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	if (MySpline == nullptr)return;
 	MySpline->Initialize(this);
 }
 

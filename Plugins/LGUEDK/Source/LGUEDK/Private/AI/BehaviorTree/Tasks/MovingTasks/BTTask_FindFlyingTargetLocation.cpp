@@ -59,42 +59,6 @@ EBTNodeResult::Type UBTTask_FindFlyingTargetLocation::ExecuteTask(UBehaviorTreeC
 			bFound = true;
 			break;
 		}
-		if (FlyingMode == EFlyingMode::Circular)
-		{
-			LGDebug::Log("FlyingMode: Circular e sto hittando ",true);
-			const int MaxAdjustTries = 10;
-			const float AngleAdjustStep = 40.f; 
-			const float AdjustDistance = 150.f;
-
-			for (int j = 1; j <= MaxAdjustTries; ++j)
-			{
-				float AdjustedAngle = (j % 2 == 0 ? 1 : -1) * AngleAdjustStep * j; 
-				float AngleRad = FMath::DegreesToRadians(AdjustedAngle);
-
-				FVector Offset;
-				Offset.X = FMath::Cos(AngleRad) * AdjustDistance;
-				Offset.Y = FMath::Sin(AngleRad) * AdjustDistance;
-
-				FVector AdjustedTarget = CurrentHitLocation + Offset;
-				AdjustedTarget.Z = CurrentHitLocation.Z; 
-
-				if (!IsHittingSomething(ControlledPawn, CurrentHitLocation, AdjustedTarget))
-				{
-					if (bDebug)
-					{
-						DrawDebugSphere(GetWorld(), AdjustedTarget, 40.f, 16, FColor::Yellow, false, 2.5f);
-						DrawDebugLine(GetWorld(), CurrentHitLocation, AdjustedTarget, FColor::Yellow, false, 2.5f, 0, 2.0f);
-					}
-
-					TargetLocation = AdjustedTarget;
-					bFound = true;
-
-					// NON aggiorno CurrentAngle! Lo lascio per il prossimo step
-					break;
-				}
-			}
-			break;
-		}
 	}
 	
 	if (!bFound)

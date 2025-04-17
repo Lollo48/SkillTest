@@ -58,11 +58,37 @@ EBTNodeResult::Type UBTTask_MoveFlyingEnemy::ExecuteTask(UBehaviorTreeComponent&
 
 void UBTTask_MoveFlyingEnemy::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	if (!Entity) return;
+	
 	FVector CurrentLocation = Entity->GetActorLocation();
+	FVector ToTarget = TargetLocation - CurrentLocation;
+	FVector Direction = ToTarget.GetSafeNormal();
 	
-	
-	if (FVector::Dist(TargetLocation, TargetLocation) <= AcceptanceRadius)
+	if (bDebug)
 	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		const FVector Start = CurrentLocation;
+		const FVector End = Start + Direction * 10000.f; 
+
+		DrawDebugLine(
+			GetWorld(),
+			Start,
+			End,
+			FColor::Red,
+			false,
+			5.f,
+			0,
+			3.0f 
+		);
 	}
+	
+	FRotator TargetRotation = Direction.Rotation();
+
+	if (bDebug)
+	{
+		LGDebug::Log("TargetRotation: " + TargetRotation.ToString(), true);
+	}
+	
+	Entity->SetActorRotation(TargetRotation);
+
+	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 }
