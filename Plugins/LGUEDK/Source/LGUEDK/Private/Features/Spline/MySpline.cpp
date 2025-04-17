@@ -231,21 +231,21 @@ void AMySpline::FollowSplinePath(float DeltaTime, float Speed)
 
 void AMySpline::ReachStartSplinePoint()
 {
-	LGDebug::Log("ReachStartSplinePoint",true);
+	//LGDebug::Log("ReachStartSplinePoint",true);
 	OnReachStartSplinePoint.Broadcast();
 	ReachStartSplinePointBP();
 }
 
 void AMySpline::ReachEndSplinePoint()
 {
-	LGDebug::Log("ReachEndSplinePoint",true);
+	//LGDebug::Log("ReachEndSplinePoint",true);
 	OnReachEndSplinePoint.Broadcast();
 	ReachEndSplinePointBP();
 }
 
 void AMySpline::ReachSplinePoint()
 {
-	LGDebug::Log("ReachSplinePoint",true);
+	//LGDebug::Log("ReachSplinePoint",true);
 	OnReachSplinePoint.Broadcast();
 	ReachSplinePointBP();
 }

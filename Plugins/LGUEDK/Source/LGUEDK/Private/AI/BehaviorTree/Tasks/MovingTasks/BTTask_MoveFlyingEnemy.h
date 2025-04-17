@@ -31,6 +31,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "AI|Movement")
 	float AcceptanceRadius = 5.0f;
 
+	UPROPERTY(EditAnywhere, Category = "AI|Movement")
+	FRotator RotationOffset;
+
 	UPROPERTY(EditAnywhere, Category = "AI|Settings")
 	bool bDebug;
 	

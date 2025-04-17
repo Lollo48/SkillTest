@@ -82,13 +82,30 @@ void UBTTask_MoveFlyingEnemy::TickTask(UBehaviorTreeComponent& OwnerComp, uint8*
 	}
 	
 	FRotator TargetRotation = Direction.Rotation();
+	
+    if (bDebug)
+    {
+    	LGDebug::Log("TargetRotation: " + TargetRotation.ToString(), true);
+    }
+	
+	FRotator Rotation = Entity->GetActorRotation() + RotationOffset;
+	Rotation.Yaw = TargetRotation.Yaw;
 
-	if (bDebug)
+	Entity->SetActorRotation(Rotation);
+
+	if (ACharacter* Character = Cast<ACharacter>(Entity))
 	{
-		LGDebug::Log("TargetRotation: " + TargetRotation.ToString(), true);
+		FRotator CurrentRotation = Character->GetMesh()->GetRelativeRotation();
+		CurrentRotation.Roll = - TargetRotation.Pitch; ///rimetterlo corretto pitch pitch finito progetto pivot sminchio
+		Character->GetMesh()->SetRelativeRotation(CurrentRotation);
 	}
 	
-	Entity->SetActorRotation(TargetRotation);
+	if (bDebug)
+	{
+		LGDebug::Log("EntityRotation: " + Entity->GetActorRotation().ToString(), true);
+	}
+
+	Entity->SetActorLocation(TargetLocation);
 
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 }
