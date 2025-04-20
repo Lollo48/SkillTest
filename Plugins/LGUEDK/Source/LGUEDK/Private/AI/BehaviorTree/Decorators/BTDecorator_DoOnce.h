@@ -21,6 +21,9 @@ protected:
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 
 private:
+
+	UPROPERTY(EditAnywhere, Category = "AI|Blackboard")
+	FBlackboardKeySelector ResetFlagKey;
 	
 	UPROPERTY()
 	mutable bool bIsAlreadyDone = false;

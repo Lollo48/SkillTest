@@ -24,9 +24,12 @@ public:
 protected:
 	
 	virtual FVector TryFindFlyingTargetLocation(UBehaviorTreeComponent& OwnerComp, APawn* AIPawn,FVector& Direction,float SearchRadius);
-	virtual bool IsHittingSomething(AActor* ControlledPawn, FVector& StartLocation,FVector& EndLocation);
+	virtual bool IsHittingSomething(FVector& StartLocation,FVector& EndLocation);
 
 private:
+
+	UPROPERTY()
+	APawn* ControlledPawn;
 	
 	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "bWantExplore"))
 	FBlackboardKeySelector InitialPositionKey;
@@ -85,6 +88,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Flying|General")
 	float VerticalBias = 0.0f; // -1 = in basso, 1 = in alto
 
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
+	float MinRotationYaw = -150.f;
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
+	float MaxRotationYaw = 150.f;
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
+	float MinRotationPitch = -100.f;
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
+	float MaxRotationPitch = 100.f;
+	
+
 	bool bCanExplore;
 
 	FVector CurrentHitLocation;
@@ -96,10 +109,10 @@ private:
 	float CurrentAngle = 0.f;
 
 	UFUNCTION()
-	FVector GetRandomDirectionFromPreference(APawn* Enemy) const;
+	FVector GetRandomDirectionFromPreference() const;
 
 	UFUNCTION()
-	float GetAltitudeAboveGround(const FVector& Location) const;
+	float GetAltitudeAboveGround(const FVector& Location);
 
 	UFUNCTION()
 	FVector GetRandomFlyingLocation(const FVector& StartLocation, const FVector& InitialPosition, const FVector& Direction, float SearchRadius);
@@ -108,7 +121,7 @@ private:
 	FVector GetCircularFlyingLocation(const FVector& CenterRadius);
 
 	UFUNCTION()
-	FVector GetAroundActorLocation(UBlackboardComponent* Blackboard, const FVector& StartLocation, float SearchRadius);
+	FVector GetAroundActorLocation(UBlackboardComponent* Blackboard, const FVector& StartLocation);
 	
 };
 

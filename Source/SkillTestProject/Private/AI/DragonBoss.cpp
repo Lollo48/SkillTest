@@ -54,10 +54,15 @@ void ADragonBoss::ReachStartSplinePoint()
 	ReachStartSplinePointBP();
 	UCharacterMovementComponent* MovementComp = this->GetCharacterMovement();
 	if (!MovementComp)return;
-
-	MovementComp->GravityScale = 1.f;
+	MovementComp->SetMovementMode(MOVE_Walking);
+	
 	if (!bWantsFly)return;
 	bWantsFly = true;
+
+	if (MySpline->GetSplineMode()==ESplineMode::SplineModeB)
+	{
+		MySpline->SetCanPerformSpline(true);
+	}
 }
 
 void ADragonBoss::ReachEndSplinePoint()
@@ -77,8 +82,13 @@ void ADragonBoss::ReachEndSplinePoint()
 	
 	UCharacterMovementComponent* MovementComp = this->GetCharacterMovement();
 	if (!MovementComp)return;
+	MovementComp->SetMovementMode(MOVE_Flying);
 
-	MovementComp->GravityScale = 0.f;
+	if (MySpline->GetSplineMode()==ESplineMode::SplineModeB)
+	{
+		MySpline->SetCanPerformSpline(false);
+	}
+
 }
 
 void ADragonBoss::ReachSplinePoint()
@@ -105,9 +115,6 @@ void ADragonBoss::Init()
 
 void ADragonBoss::Tick(float DeltaTime)
 {
-	if (GetMovementActionState() == EMovementActionState::Flying)
-		return;
-	
 	Super::Tick(DeltaTime);
 }
 

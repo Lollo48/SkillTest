@@ -75,4 +75,5 @@ protected:
 private:
 	UPROPERTY()
 	EEnemyState CurrentState;
+	
 };

@@ -29,7 +29,16 @@ private:
 	FBlackboardKeySelector TargetLocationKey;
 
 	UPROPERTY(EditAnywhere, Category = "AI|Movement")
+	float IncrementMovementSpeed = 4000.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "AI|Movement")
+	float RotationSpeed = 5.0f;
+
+	UPROPERTY(EditAnywhere, Category = "AI|Movement")
 	float AcceptanceRadius = 5.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "AI|Movement")
+	float RotationTolerance = 5.0f;
 
 	UPROPERTY(EditAnywhere, Category = "AI|Movement")
 	FRotator RotationOffset;
@@ -41,6 +50,9 @@ private:
 
 	UPROPERTY()
 	UCharacterMovementComponent* MovementComp;
+
+	UPROPERTY()
+	ACharacter* Character;
 
 	UPROPERTY()
 	APawn* Entity;

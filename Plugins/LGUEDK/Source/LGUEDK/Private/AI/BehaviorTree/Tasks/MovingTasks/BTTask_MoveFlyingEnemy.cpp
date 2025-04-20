@@ -35,8 +35,9 @@ EBTNodeResult::Type UBTTask_MoveFlyingEnemy::ExecuteTask(UBehaviorTreeComponent&
 		FinishLatentTask(OwnerComp,EBTNodeResult::Failed);
 		return EBTNodeResult::Failed; 
 	}
-	
-	if (ACharacter* Character = Cast<ACharacter>(Entity))
+
+	Character = Cast<ACharacter>(Entity);
+	if (Character)
 	{
 		MovementComp = Character->GetCharacterMovement();
 		if (!MovementComp)
@@ -45,7 +46,7 @@ EBTNodeResult::Type UBTTask_MoveFlyingEnemy::ExecuteTask(UBehaviorTreeComponent&
 			return EBTNodeResult::Failed; 
 		}
 		
-		CharacterSpeed = MovementComp->MaxFlySpeed = MovementComp->MaxWalkSpeed;
+		CharacterSpeed = MovementComp->MaxFlySpeed = MovementComp->MaxWalkSpeed + IncrementMovementSpeed;
 	}
 	else
 	{
@@ -58,54 +59,47 @@ EBTNodeResult::Type UBTTask_MoveFlyingEnemy::ExecuteTask(UBehaviorTreeComponent&
 
 void UBTTask_MoveFlyingEnemy::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	if (!Entity) return;
-	
 	FVector CurrentLocation = Entity->GetActorLocation();
 	FVector ToTarget = TargetLocation - CurrentLocation;
 	FVector Direction = ToTarget.GetSafeNormal();
+	FRotator TargetRotation = Direction.Rotation();
+	
+	FRotator DesiredRotation = TargetRotation + RotationOffset;
+	FRotator CurrentActorRotation = Entity->GetActorRotation();
+	
+	FRotator SmoothedActorRotation = FMath::RInterpTo(CurrentActorRotation, DesiredRotation, DeltaSeconds, RotationSpeed);
+	Entity->SetActorRotation(SmoothedActorRotation);
+	
+	FRotator CurrentMeshRotation = Character->GetMesh()->GetRelativeRotation();
+	FRotator TargetMeshRotation = CurrentMeshRotation;
+	TargetMeshRotation.Roll = -TargetRotation.Pitch;
+
+	FRotator SmoothedMeshRotation = FMath::RInterpTo(CurrentMeshRotation, TargetMeshRotation, DeltaSeconds, RotationSpeed);
+	Character->GetMesh()->SetRelativeRotation(SmoothedMeshRotation);
+	
+	FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaSeconds, CharacterSpeed);
+	Entity->SetActorLocation(NewLocation);
 	
 	if (bDebug)
 	{
-		const FVector Start = CurrentLocation;
-		const FVector End = Start + Direction * 10000.f; 
-
 		DrawDebugLine(
 			GetWorld(),
-			Start,
-			End,
+			CurrentLocation,
+			TargetLocation,
 			FColor::Red,
 			false,
-			5.f,
+			0.1f,
 			0,
 			3.0f 
 		);
 	}
 	
-	FRotator TargetRotation = Direction.Rotation();
-	
-    if (bDebug)
-    {
-    	LGDebug::Log("TargetRotation: " + TargetRotation.ToString(), true);
-    }
-	
-	FRotator Rotation = Entity->GetActorRotation() + RotationOffset;
-	Rotation.Yaw = TargetRotation.Yaw;
+	bool bReachedLocation = FVector::Dist(NewLocation, TargetLocation) <= AcceptanceRadius;
+	bool bMeshAligned = FMath::Abs(CurrentMeshRotation.Roll - TargetMeshRotation.Roll) <= RotationTolerance;
+	bool bActorAligned = FMath::Abs(CurrentActorRotation.Yaw - DesiredRotation.Yaw) <= RotationTolerance;
 
-	Entity->SetActorRotation(Rotation);
-
-	if (ACharacter* Character = Cast<ACharacter>(Entity))
+	if (bReachedLocation && bActorAligned && bMeshAligned)
 	{
-		FRotator CurrentRotation = Character->GetMesh()->GetRelativeRotation();
-		CurrentRotation.Roll = - TargetRotation.Pitch; ///rimetterlo corretto pitch pitch finito progetto pivot sminchio
-		Character->GetMesh()->SetRelativeRotation(CurrentRotation);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
-	
-	if (bDebug)
-	{
-		LGDebug::Log("EntityRotation: " + Entity->GetActorRotation().ToString(), true);
-	}
-
-	Entity->SetActorLocation(TargetLocation);
-
-	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 }

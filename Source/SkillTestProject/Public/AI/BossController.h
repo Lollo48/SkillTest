@@ -49,4 +49,6 @@ private:
 	
 	UPROPERTY()
 	ADragonBoss* BossEntity;
+
+	
 };

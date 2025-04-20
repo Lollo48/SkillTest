@@ -33,6 +33,7 @@ void ABossController::SetStateAsPatrolling()
 	
 	if (!Blackboard)return;
 	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Patrolling));
+	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 
 	if (!BossEntity)return;
 	BossEntity->OnEnemyPatrolling();
@@ -44,6 +45,7 @@ void ABossController::SetStateAsInvestigating()
 	
 	if (!Blackboard)return;
 	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Investigating));
+	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 
 	if (!BossEntity)return;
 	BossEntity->OnEnemyInvestigating();
@@ -55,6 +57,7 @@ void ABossController::SetStateAsAttacking(AActor* InAttackTarget)
 	
 	if (!Blackboard)return;
 	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Attacking));
+	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 
 	if (!BossEntity)return;
 	BossEntity->OnEnemyAttack(InAttackTarget);
@@ -72,6 +75,7 @@ void ABossController::SetStateAsFlying()
 {
 	if (!Blackboard)return;
 	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Flying));
+	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 
 	if (!BossEntity)return;
 	BossEntity->OnEnemyFlying();
@@ -81,6 +85,8 @@ void ABossController::UpdateBBMovementActionState(EMovementActionState InMovemen
 {
 	if (!Blackboard)return;
 	Blackboard->SetValueAsEnum(TEXT("MovementActionState"), uint8(InMovementActionState));
+	Blackboard->SetValueAsVector("InitialPosition",BossEntity->GetActorLocation());
+	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 }
 
 void ABossController::Tick(float DeltaTime)
@@ -115,6 +121,7 @@ void ABossController::InitializeBlackboardValues()
 
 	Blackboard->SetValueAsEnum("EnemyState",uint8(EEnemyState::Patrolling));
 	Blackboard->SetValueAsEnum("MovementActionState",uint8(EMovementActionState::Walking));
+	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 	Blackboard->SetValueAsVector("InitialPosition",BossEntity->GetActorLocation());
 	Blackboard->SetValueAsFloat(TEXT("SearchRadius"), EnemyDataAsset->SearchRadius);
 	Blackboard->SetValueAsFloat(TEXT("TimeBeforeNextStep"), EnemyDataAsset->TimeBeforeNextStep);

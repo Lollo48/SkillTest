@@ -22,7 +22,7 @@ EBTNodeResult::Type UBTTask_FindFlyingTargetLocation::ExecuteTask(UBehaviorTreeC
 		return EBTNodeResult::Failed;
 	}
 
-	APawn* const ControlledPawn = Controller->GetPawn();
+	ControlledPawn = Controller->GetPawn();
 	if (!ControlledPawn)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
@@ -40,10 +40,10 @@ EBTNodeResult::Type UBTTask_FindFlyingTargetLocation::ExecuteTask(UBehaviorTreeC
 	bool bFound = false;
 	FVector TargetLocation = FVector::ZeroVector;
 	FVector ActorPosition = ControlledPawn->GetActorLocation();
+	FVector Direction = GetRandomDirectionFromPreference();
 	
 	for (int i = 0; i < 10; ++i)
 	{
-		FVector Direction = GetRandomDirectionFromPreference(ControlledPawn);
 		TargetLocation = TryFindFlyingTargetLocation(OwnerComp, ControlledPawn, Direction, SearchRadius);
 		
 		if (bDebug)
@@ -52,8 +52,7 @@ EBTNodeResult::Type UBTTask_FindFlyingTargetLocation::ExecuteTask(UBehaviorTreeC
 			DrawDebugSphere(GetWorld(), TargetLocation, 400.f, 12, FColor::Yellow, false, 1.5f);
 		}
 		
-		bool bHit = IsHittingSomething(ControlledPawn, ActorPosition, TargetLocation);
-		
+		bool bHit = IsHittingSomething(ActorPosition, TargetLocation);
 		if (!bHit)
 		{
 			bFound = true;
@@ -83,7 +82,6 @@ FVector UBTTask_FindFlyingTargetLocation::TryFindFlyingTargetLocation(UBehaviorT
 	if (!Blackboard) return FVector::ZeroVector;
 
 	FVector InitialPosition = Blackboard->GetValueAsVector(InitialPositionKey.SelectedKeyName);
-	bCanExplore = BaseStateEnemy->GetDataAsset()->bWantExplore;
 
 	FVector StartLocation = AIPawn->GetActorLocation();
 	FVector TargetLocation = FVector::ZeroVector;
@@ -92,24 +90,25 @@ FVector UBTTask_FindFlyingTargetLocation::TryFindFlyingTargetLocation(UBehaviorT
 	{
 		case EFlyingMode::Random:
 			TargetLocation = GetRandomFlyingLocation(StartLocation, InitialPosition, Direction, SearchRadius);
+			TargetLocation.Z = GetAltitudeAboveGround(TargetLocation);
 		break;
 		case EFlyingMode::Circular:
 			TargetLocation = GetCircularFlyingLocation(InitialPosition);
+			TargetLocation.Z = FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround);
 		break;
 		case EFlyingMode::AroundActor:
-			TargetLocation = GetAroundActorLocation(Blackboard, StartLocation, SearchRadius);
+			TargetLocation = GetAroundActorLocation(Blackboard, StartLocation);
+			TargetLocation.Z = GetAltitudeAboveGround(TargetLocation);
 		break;
 		default:
 			TargetLocation = StartLocation;
 		break;
 	}
-	
-	TargetLocation.Z = GetAltitudeAboveGround(TargetLocation);
 
 	return TargetLocation;
 }
 
-bool UBTTask_FindFlyingTargetLocation::IsHittingSomething(AActor* ControlledPawn, FVector& StartLocation,FVector& EndLocation)
+bool UBTTask_FindFlyingTargetLocation::IsHittingSomething(FVector& StartLocation,FVector& EndLocation)
 {
 	FCollisionQueryParams TraceParams;
 	TraceParams.AddIgnoredActor(ControlledPawn);
@@ -152,11 +151,9 @@ bool UBTTask_FindFlyingTargetLocation::IsHittingSomething(AActor* ControlledPawn
 	return bHit;
 }
 
-FVector UBTTask_FindFlyingTargetLocation::GetRandomDirectionFromPreference(APawn* Enemy) const
+FVector UBTTask_FindFlyingTargetLocation::GetRandomDirectionFromPreference() const
 {
-	if (!Enemy) return FVector::ForwardVector;
-
-	FRotator NewRot = Enemy->GetActorRotation();
+	FRotator NewRot = ControlledPawn->GetActorRotation();
 
 	float YawOffset = 0.0f;
 
@@ -191,7 +188,7 @@ FVector UBTTask_FindFlyingTargetLocation::GetRandomDirectionFromPreference(APawn
 	return NewRot.Vector();
 }
 
-float UBTTask_FindFlyingTargetLocation::GetAltitudeAboveGround(const FVector& Location) const
+float UBTTask_FindFlyingTargetLocation::GetAltitudeAboveGround(const FVector& Location)
 {
 	FHitResult Hit;
 	FVector TraceStart = Location + FVector(0, 0, 1000.f);
@@ -211,12 +208,17 @@ float UBTTask_FindFlyingTargetLocation::GetAltitudeAboveGround(const FVector& Lo
 			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 30.f, 8, FColor::Green, false, 2.0f);
 	}
 
-	return bHit ? Hit.ImpactPoint.Z + FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround) : Location.Z;
+	return bHit ? Hit.ImpactPoint.Z + FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround) : ControlledPawn->GetActorLocation().Z;
 }
 
 FVector UBTTask_FindFlyingTargetLocation::GetRandomFlyingLocation(const FVector& StartLocation,const FVector& InitialPosition, const FVector& Direction, float SearchRadius)
 {
-	FVector TargetLocation = StartLocation + (Direction * SearchRadius);
+	FRotator NewRotation = ControlledPawn->GetActorRotation();
+	NewRotation.Yaw += FMath::RandRange(MinRotationYaw, MaxRotationYaw); 
+	NewRotation.Pitch = FMath::RandRange(MinRotationPitch, MaxRotationPitch); 
+	FVector ForwardDirection = NewRotation.Vector();
+	
+	FVector TargetLocation = StartLocation + (ForwardDirection * Direction * SearchRadius);
 	if (!bCanExplore)
 	{
 		float DistanceFromSpawn = FVector::Dist(TargetLocation, InitialPosition);
@@ -242,7 +244,7 @@ FVector UBTTask_FindFlyingTargetLocation::GetCircularFlyingLocation(const FVecto
 	return CircleCenter + Offset;
 }
 
-FVector UBTTask_FindFlyingTargetLocation::GetAroundActorLocation(UBlackboardComponent* Blackboard, const FVector& StartLocation, float SearchRadius)
+FVector UBTTask_FindFlyingTargetLocation::GetAroundActorLocation(UBlackboardComponent* Blackboard, const FVector& StartLocation)
 {
 	AActor* ReferenceActor = Cast<AActor>(Blackboard->GetValueAsObject(AroundActorKey.SelectedKeyName));
 	if (!ReferenceActor)

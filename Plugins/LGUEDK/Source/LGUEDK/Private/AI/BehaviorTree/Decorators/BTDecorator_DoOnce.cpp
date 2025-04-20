@@ -3,6 +3,8 @@
 
 #include "BTDecorator_DoOnce.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
+
 UBTDecorator_DoOnce::UBTDecorator_DoOnce(FObjectInitializer const& ObjectInitializer)
 {
 	NodeName = "Do Once";
@@ -10,8 +12,12 @@ UBTDecorator_DoOnce::UBTDecorator_DoOnce(FObjectInitializer const& ObjectInitial
 
 bool UBTDecorator_DoOnce::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const
 {
+	
+	bIsAlreadyDone = OwnerComp.GetBlackboardComponent()->GetValueAsBool(ResetFlagKey.SelectedKeyName);
+	
 	if (!bIsAlreadyDone)
 	{
+		OwnerComp.GetBlackboardComponent()->SetValueAsBool(ResetFlagKey.SelectedKeyName, true);
 		bIsAlreadyDone = true;
 		return true;
 	}

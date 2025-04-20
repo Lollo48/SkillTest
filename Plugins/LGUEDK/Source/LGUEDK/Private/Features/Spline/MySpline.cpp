@@ -151,6 +151,8 @@ void AMySpline::CheckPointsDistance()
 void AMySpline::FollowSplinePath(float DeltaTime, float Speed)
 {
 	if (!CharacterMovementComponent || !CurrentUser || !SplineComponent) return;
+
+	if (!bStartSplineOn)return;
 	
 	SplineLength = SplineComponent->GetSplineLength();
 	
@@ -188,7 +190,6 @@ void AMySpline::FollowSplinePath(float DeltaTime, float Speed)
 	CurrentUser->SetActorRotation(SmoothedRotation);
 	
 	CharacterMovementComponent->Velocity = DesiredTangent * Speed;
-
 	
 	if (bMovingForward)
 	{
@@ -231,21 +232,26 @@ void AMySpline::FollowSplinePath(float DeltaTime, float Speed)
 
 void AMySpline::ReachStartSplinePoint()
 {
-	//LGDebug::Log("ReachStartSplinePoint",true);
+	if (bDrawDebug)
+		LGDebug::Log("ReachStartSplinePoint",true);
+	
 	OnReachStartSplinePoint.Broadcast();
 	ReachStartSplinePointBP();
 }
 
 void AMySpline::ReachEndSplinePoint()
 {
-	//LGDebug::Log("ReachEndSplinePoint",true);
+	if (bDrawDebug)
+		LGDebug::Log("ReachEndSplinePoint",true);
+	
 	OnReachEndSplinePoint.Broadcast();
 	ReachEndSplinePointBP();
 }
 
 void AMySpline::ReachSplinePoint()
 {
-	//LGDebug::Log("ReachSplinePoint",true);
+	if (bDrawDebug)
+		LGDebug::Log("ReachSplinePoint",true);
 	OnReachSplinePoint.Broadcast();
 	ReachSplinePointBP();
 }

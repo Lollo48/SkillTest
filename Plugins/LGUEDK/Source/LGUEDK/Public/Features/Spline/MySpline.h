@@ -58,6 +58,12 @@ public:
 	UFUNCTION(BlueprintCallable,Category = "Spline")
 	void FollowSplinePath(float DeltaTime, float Speed);
 
+	UFUNCTION(BlueprintCallable,Category = "Spline")
+	bool CanPerformSpline() const { return bStartSplineOn; }
+
+	UFUNCTION(BlueprintCallable,Category = "Spline")
+	void SetCanPerformSpline(bool bCanPerform) { bStartSplineOn = bCanPerform; }
+
 	virtual void Tick(float DeltaSeconds) override;
 
 protected:
@@ -144,7 +150,11 @@ private:
 
 	UPROPERTY()
 	float DistanceAlongSpline = 0.0f;
+	UPROPERTY()
 	FVector LastLocation = FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true",EditCondition = "SplineMode == ESplineMode::SplineModeB"))
+	bool bStartSplineOn;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
 	bool bDrawDebug;
