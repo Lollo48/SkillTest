@@ -3,6 +3,8 @@
 
 #include "SkillTestProject/Public/AI/DragonBoss.h"
 
+#include <string>
+
 #include "AI/BossController.h"
 
 
@@ -116,7 +118,8 @@ void ADragonBoss::Tick(float DeltaTime)
 
 	if (GetMovementActionState() == EMovementActionState::Flying)
 	{
-		//LGDebug::Log("Timer " + FString::SanitizeFloat(Timer), true);
+		float Distance = GetAltitudeAboveGround();
+		LGDebug::Log(FString::Printf(TEXT("Distance: %.2f"), Distance), true);
 		if (Timer <= 0.f)
 		{
 			//LGDebug::Log("Flying",true);
@@ -132,5 +135,30 @@ void ADragonBoss::SetMovementComponentActionMode(const EMovementMode Mode) const
 	UCharacterMovementComponent* MovementComp = this->GetCharacterMovement();
 	if (!MovementComp)return;
 	MovementComp->SetMovementMode(Mode);
+}
+
+float ADragonBoss::GetAltitudeAboveGround()
+{
+	FHitResult Hit;
+	FVector TraceStart = GetActorLocation();
+	FVector TraceEnd = TraceStart - FVector(0, 0, 40000.f);
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		Hit,
+		TraceStart,
+		TraceEnd,
+		CollisionChannelIsHittingSomething
+	);
+
+	if (bDebug)
+	{
+		DrawDebugLine(GetWorld(), TraceStart, TraceEnd, FColor::Blue, false, 2.0f);
+		if (bHit)
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 30.f, 8, FColor::Green, false, 2.0f);
+
+		//LGDebug::Log("Hit.ImpactPoint.Z: " + Hit.Location.ToString(), true);
+	}
+
+	return bHit ? (GetActorLocation().Z - Hit.Location.Z) : 0.f;
 }
 

@@ -49,7 +49,7 @@ protected:
 
 	UPROPERTY()
 	bool bWantsFly = true;
-	
+
 	virtual void BeginPlay() override;
 	
 	virtual void Init() override;
@@ -67,13 +67,22 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "AI",meta = (AllowPrivateAccess = "true"))
 	float FlyingDuration = 10.f;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
+	TEnumAsByte<ECollisionChannel> CollisionChannelIsHittingSomething;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "AI",meta = (AllowPrivateAccess = "true"))
+	bool bDebug;
 
 	UPROPERTY()
 	float Timer;
 
 	UFUNCTION()
 	void SetMovementComponentActionMode(const EMovementMode Mode) const;
+
+	UFUNCTION()
+	float GetAltitudeAboveGround();
 
 };
