@@ -84,11 +84,12 @@ void ADragonBoss::ReachEndSplinePoint()
 	if (!MovementComp)return;
 	MovementComp->SetMovementMode(MOVE_Flying);
 
+	Timer = FlyingDuration;
+
 	if (MySpline->GetSplineMode()==ESplineMode::SplineModeB)
 	{
 		MySpline->SetCanPerformSpline(false);
 	}
-
 }
 
 void ADragonBoss::ReachSplinePoint()
@@ -116,5 +117,17 @@ void ADragonBoss::Init()
 void ADragonBoss::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (GetMovementActionState() == EMovementActionState::Flying)
+	{
+		//LGDebug::Log("Timer " + FString::SanitizeFloat(Timer), true);
+		if (Timer <= 0.f)
+		{
+			//LGDebug::Log("Flying",true);
+			SetFlyingActionState(EFlyingActionState::EndFlying);
+			ReachStartSplinePoint();
+		}
+		Timer -= DeltaTime;
+	}
 }
 

@@ -66,4 +66,11 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "Spline Setting",meta = (AllowPrivateAccess = "true"))
+	float FlyingDuration = 10.f;
+
+	UPROPERTY()
+	float Timer;
+
 };

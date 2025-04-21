@@ -98,6 +98,11 @@ void UBTTask_MoveFlyingEnemy::TickTask(UBehaviorTreeComponent& OwnerComp, uint8*
 	bool bMeshAligned = FMath::Abs(CurrentMeshRotation.Roll - TargetMeshRotation.Roll) <= RotationTolerance;
 	bool bActorAligned = FMath::Abs(CurrentActorRotation.Yaw - DesiredRotation.Yaw) <= RotationTolerance;
 
+	if (bDebug)
+	{
+		LGDebug::Log("CurrentMeshRotation" + CurrentMeshRotation.ToString(), true);
+	}
+
 	if (bReachedLocation && bActorAligned && bMeshAligned)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
