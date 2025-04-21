@@ -119,7 +119,7 @@ void ADragonBoss::Tick(float DeltaTime)
 	if (GetMovementActionState() == EMovementActionState::Flying)
 	{
 		DistanceFromGround = GetAltitudeAboveGround();
-		LGDebug::Log(FString::Printf(TEXT("Distance: %.2f"), DistanceFromGround), true);
+		//LGDebug::Log(FString::Printf(TEXT("Distance: %.2f"), DistanceFromGround), true);
 		if (Timer <= 0.f)
 		{
 			//LGDebug::Log("Flying",true);
@@ -158,9 +158,7 @@ float ADragonBoss::GetAltitudeAboveGround()
 
 		//LGDebug::Log("Hit.ImpactPoint.Z: " + Hit.Location.ToString(), true);
 	}
-
 	
-
 	return bHit ? (GetActorLocation().Z - Hit.Location.Z) : GetActorLocation().Z;
 }
 
