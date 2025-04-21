@@ -38,6 +38,9 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category = "AI|FlyingState")
 	void SetFlyingActionState(EFlyingActionState InFlyingActionState) { FlyingActionState = InFlyingActionState; }
+
+	UFUNCTION(BlueprintCallable,Category = "AI")
+	float GetDistanceFromGround() const { return DistanceFromGround; }
 	
 protected:
 
@@ -72,6 +75,12 @@ private:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
 	TEnumAsByte<ECollisionChannel> CollisionChannelIsHittingSomething;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
+	FVector OffsetPivot;
+
+	UPROPERTY()
+	float DistanceFromGround = 0.f;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "AI",meta = (AllowPrivateAccess = "true"))
 	bool bDebug;
