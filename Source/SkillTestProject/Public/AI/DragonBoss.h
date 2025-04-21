@@ -73,4 +73,7 @@ private:
 	UPROPERTY()
 	float Timer;
 
+	UFUNCTION()
+	void SetMovementComponentActionMode(const EMovementMode Mode) const;
+
 };

@@ -113,7 +113,7 @@ private:
 
 	UFUNCTION()
 	float GetAltitudeAboveGround(const FVector& Location);
-
+	
 	UFUNCTION()
 	FVector GetRandomFlyingLocation(const FVector& StartLocation, const FVector& InitialPosition, const FVector& Direction, float SearchRadius);
 

@@ -52,9 +52,7 @@ void ADragonBoss::OnEnemyFlying()
 void ADragonBoss::ReachStartSplinePoint()
 {
 	ReachStartSplinePointBP();
-	UCharacterMovementComponent* MovementComp = this->GetCharacterMovement();
-	if (!MovementComp)return;
-	MovementComp->SetMovementMode(MOVE_Walking);
+	SetMovementComponentActionMode(MOVE_Walking);
 	
 	if (!bWantsFly)return;
 	bWantsFly = true;
@@ -79,10 +77,8 @@ void ADragonBoss::ReachEndSplinePoint()
 	AIController->UpdateBBMovementActionState(EMovementActionState::Flying);
 	SetMovementActionState(EMovementActionState::Flying);
 	bWantsFly = false;
-	
-	UCharacterMovementComponent* MovementComp = this->GetCharacterMovement();
-	if (!MovementComp)return;
-	MovementComp->SetMovementMode(MOVE_Flying);
+
+	SetMovementComponentActionMode(MOVE_Flying);
 
 	Timer = FlyingDuration;
 
@@ -125,9 +121,16 @@ void ADragonBoss::Tick(float DeltaTime)
 		{
 			//LGDebug::Log("Flying",true);
 			SetFlyingActionState(EFlyingActionState::EndFlying);
-			ReachStartSplinePoint();
+			SetMovementComponentActionMode(MOVE_Walking);
 		}
 		Timer -= DeltaTime;
 	}
+}
+
+void ADragonBoss::SetMovementComponentActionMode(const EMovementMode Mode) const
+{
+	UCharacterMovementComponent* MovementComp = this->GetCharacterMovement();
+	if (!MovementComp)return;
+	MovementComp->SetMovementMode(Mode);
 }
 
