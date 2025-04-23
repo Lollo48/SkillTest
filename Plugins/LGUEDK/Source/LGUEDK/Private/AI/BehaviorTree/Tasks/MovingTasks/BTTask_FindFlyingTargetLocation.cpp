@@ -35,6 +35,8 @@ EBTNodeResult::Type UBTTask_FindFlyingTargetLocation::ExecuteTask(UBehaviorTreeC
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 		return EBTNodeResult::Failed;
 	}
+
+	Iteration = 0;
 	
 	float SearchRadius = Blackboard->GetValueAsFloat(SearchRadiusKey.SelectedKeyName);
 	bool bFound = false;
@@ -99,6 +101,11 @@ FVector UBTTask_FindFlyingTargetLocation::TryFindFlyingTargetLocation(UBehaviorT
 		case EFlyingMode::AroundActor:
 			TargetLocation = GetAroundActorLocation(Blackboard, StartLocation);
 			TargetLocation.Z = GetAltitudeAboveGround(TargetLocation);
+		break;
+		case EFlyingMode::ToPoint:
+			TargetLocation = GetToPoint(StartLocation, InitialPosition);
+			TargetLocation.Z = InitialPosition.Z;
+			Iteration++;
 		break;
 		default:
 			TargetLocation = StartLocation;
@@ -276,4 +283,21 @@ FVector UBTTask_FindFlyingTargetLocation::GetAroundActorLocation(UBlackboardComp
 	}
 
 	return TargetLocation;
+}
+
+FVector UBTTask_FindFlyingTargetLocation::GetToPoint(const FVector& StartLocation, const FVector& EndLocation)
+{
+	if (Iteration == 0)
+	{
+		return EndLocation;
+	}
+	
+	float RangeScale = Iteration * 2000.f; 
+	FVector Offset = FVector(
+		FMath::RandRange(-RangeScale, RangeScale),
+		FMath::RandRange(-RangeScale, RangeScale),
+		EndLocation.Z
+	);
+	
+	return EndLocation + Offset;
 }

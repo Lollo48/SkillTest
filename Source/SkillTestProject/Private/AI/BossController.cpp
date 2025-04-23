@@ -58,6 +58,7 @@ void ABossController::SetStateAsAttacking(AActor* InAttackTarget)
 	if (!Blackboard)return;
 	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Attacking));
 	Blackboard->SetValueAsBool("IsAlreadyDone",false);
+	Blackboard->SetValueAsObject("AttackTarget",InAttackTarget);
 
 	if (!BossEntity)return;
 	BossEntity->OnEnemyAttack(InAttackTarget);
@@ -68,7 +69,6 @@ void ABossController::SetStateAsDead(AActor* InAttackTarget)
 	Super::SetStateAsDead(InAttackTarget);
 	if (!Blackboard)return;
 	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Dead));
-
 }
 
 void ABossController::SetStateAsFlying()

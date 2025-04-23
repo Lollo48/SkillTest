@@ -55,9 +55,11 @@ void ADragonBoss::ReachStartSplinePoint()
 {
 	ReachStartSplinePointBP();
 	SetMovementComponentActionMode(MOVE_Walking);
+
+	Timer = FlyingDuration;
 	
 	if (!bWantsFly)return;
-	bWantsFly = true;
+		bWantsFly = true;
 
 	if (MySpline->GetSplineMode()==ESplineMode::SplineModeB)
 	{

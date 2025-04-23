@@ -108,6 +108,9 @@ private:
 	UPROPERTY()
 	float CurrentAngle = 0.f;
 
+	UPROPERTY()
+	int Iteration = 0;
+
 	UFUNCTION()
 	FVector GetRandomDirectionFromPreference() const;
 
@@ -122,6 +125,9 @@ private:
 
 	UFUNCTION()
 	FVector GetAroundActorLocation(UBlackboardComponent* Blackboard, const FVector& StartLocation);
+
+	UFUNCTION()
+	FVector GetToPoint(const FVector& StartLocation, const FVector& EndLocation);
 	
 };
 
