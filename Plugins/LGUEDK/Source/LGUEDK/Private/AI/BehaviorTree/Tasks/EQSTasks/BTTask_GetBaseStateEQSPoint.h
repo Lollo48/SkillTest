@@ -25,5 +25,13 @@ protected:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
 	float Margin;
-;
+
+	/**Put Max Distance From Target Location to 0 to use the DATA asset variable.*/
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
+	float MaxDistanceFromTargetLocation = 0.f;
+
+	/**Put Min Distance From Target Location to 0 to use the DATA asset variable.*/
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
+	float MinDistanceFromTargetLocation = 0.f;
+	
 };

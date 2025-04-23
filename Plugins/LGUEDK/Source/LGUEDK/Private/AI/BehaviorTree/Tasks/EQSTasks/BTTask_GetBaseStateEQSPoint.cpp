@@ -51,6 +51,9 @@ FVector UBTTask_GetBaseStateEQSPoint::PerformTask(UBehaviorTreeComponent& OwnerC
 		}
 		return ControlledPawnPosition;
 	};
+
+	if (MinDistanceFromTargetLocation > 0.f)MinDistance = MinDistanceFromTargetLocation;
+	if (MaxDistanceFromTargetLocation > 0.f)MaxDistance = MaxDistanceFromTargetLocation;
 	
 	TArray<FVector> Points = UEQSUtility::TryGetPoint(ControlledPawn, AttackTarget, MinDistance, MaxDistance);
 	Algo::RandomShuffle(Points);
