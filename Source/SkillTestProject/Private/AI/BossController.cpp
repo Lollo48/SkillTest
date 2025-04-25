@@ -3,6 +3,7 @@
 
 #include "SkillTestProject/Public/AI/BossController.h"
 
+#include "AI/Enumerators/ComboAttack/ComboAttackState.h"
 #include "Runtime/AIModule/Classes/BehaviorTree/BlackboardComponent.h"
 
 
@@ -129,6 +130,7 @@ void ABossController::InitializeBlackboardValues()
 	Blackboard->SetValueAsObject(TEXT("AttackTarget"), nullptr);
 	Blackboard->SetValueAsFloat(TEXT("MaxAttackRadius"), EnemyDataAsset->MaxAttackRadius);
 	Blackboard->SetValueAsFloat(TEXT("MinAttackRadius"), EnemyDataAsset->MinAttackRadius);
+	Blackboard->SetValueAsEnum("ComboAttack",uint8(EComboAttackState::ComboAttack1));
 }
 
 void ABossController::InitializeController()

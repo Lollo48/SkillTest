@@ -97,6 +97,84 @@ void ADragonBoss::ReachSplinePoint()
 	ReachSplinePointBP();
 }
 
+UAttackDataAsset* ADragonBoss::GetAttackDataAsset()
+{
+	float Distance = FVector::Dist(GetActorLocation(), GetAttackTarget()->GetActorLocation());
+
+	UAttackDataAsset* BestAttack = nullptr;
+	int32 HighestPriority = -1;
+
+	if (AttacksCombo.Num() == 1)
+	{
+		return AttacksCombo[0];
+	}
+
+	for (UAttackDataAsset* Attack : AttacksCombo)
+	{
+		if (!Attack || !Attack->bCanPerformAttack || Attack->AttackType == EComboAttackState::ComboAttack1)
+			continue;
+
+		if (Distance >= Attack->MinRange && Distance <= Attack->MaxRange)
+		{
+			if (Attack->Priority > HighestPriority)
+			{
+				BestAttack = Attack;
+				HighestPriority = Attack->Priority;
+			}
+		}
+	}
+
+	if (BestAttack)
+	{
+		BestAttack->bCanPerformAttack = false;
+		OnAttackStart.Broadcast(BestAttack);
+		
+		AttackCooldownMap.Add(BestAttack, BestAttack->Cooldown);
+
+		if (!AttacksCombo.Contains(BestAttack))return nullptr;
+		AttacksCombo.Remove(BestAttack);
+		
+		return BestAttack;
+	}
+	
+	return  AttacksCombo[0];
+}
+
+void ADragonBoss::UpdateCooldownAttacksCombo(float DeltaTime)
+{
+	TArray<UAttackDataAsset*> FinishedCooldowns;
+
+	for (auto& Elem : AttackCooldownMap)
+	{
+		UAttackDataAsset* Attack = Elem.Key;
+		float& TimeRemaining = Elem.Value;
+
+		TimeRemaining -= DeltaTime;
+		if (TimeRemaining <= 0.f)
+		{
+			Attack->bCanPerformAttack = true;
+
+			if (AttackCooldownMap.Contains(Attack))
+			{
+				AttackCooldownMap.Remove(Attack);
+			}
+			
+			if (!AttacksCombo.Contains(Attack))
+			{
+				AttacksCombo.Add(Attack);
+			}
+		}
+	}
+}
+
+void ADragonBoss::InitAttacksCombo()
+{
+	for (auto Element : AttacksCombo)
+	{
+		Element->bCanPerformAttack = true;
+	}
+}
+
 void ADragonBoss::BeginPlay()
 {
 	Super::BeginPlay();
@@ -107,6 +185,8 @@ void ADragonBoss::BeginPlay()
 	MySpline->OnReachEndSplinePoint.AddDynamic(this, &ADragonBoss::ReachEndSplinePoint);
 
 	bWantsFly = true;
+
+	InitAttacksCombo();
 }
 
 void ADragonBoss::Init()
@@ -117,6 +197,11 @@ void ADragonBoss::Init()
 void ADragonBoss::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (AttackCooldownMap.Num() > 0)
+	{
+		UpdateCooldownAttacksCombo(DeltaTime);
+	}
 
 	if (GetMovementActionState() == EMovementActionState::Flying)
 	{

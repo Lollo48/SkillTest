@@ -4,9 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AI/Enumerators/ActionState/FlyingActionState.h"
+#include "AI/NPC/AttacksData/AttackDataAsset.h"
 #include "AI/NPC/NPCBaseStateSplineEnemy/NPCBaseStateSplineEnemy.h"
 #include "Data/BossDataAsset.h"
 #include "DragonBoss.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FStartAttack,UAttackDataAsset*, InAttackCombo );
 
 UCLASS()
 class SKILLTESTPROJECT_API ADragonBoss : public ANPCBaseStateSplineEnemy
@@ -16,6 +19,9 @@ class SKILLTESTPROJECT_API ADragonBoss : public ANPCBaseStateSplineEnemy
 public:
 	
 	ADragonBoss();
+
+	UPROPERTY(BlueprintAssignable)
+	FStartAttack OnAttackStart;
 
 	virtual void OnEnemyPassive() override;
 	virtual void OnEnemyPatrolling() override;
@@ -41,6 +47,9 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category = "AI")
 	float GetDistanceFromGround() const { return DistanceFromGround; }
+
+	UFUNCTION(BlueprintCallable,Category = "AI")
+	UAttackDataAsset* GetAttackDataAsset();
 	
 protected:
 
@@ -49,6 +58,9 @@ protected:
 
 	UPROPERTY()
 	EFlyingActionState FlyingActionState = EFlyingActionState::StartFlying;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "AI",meta = (AllowPrivateAccess = "true"))
+	TArray<UAttackDataAsset*> AttacksCombo;
 
 	UPROPERTY()
 	bool bWantsFly = true;
@@ -88,6 +100,15 @@ private:
 	UPROPERTY()
 	float Timer;
 
+	UPROPERTY()
+	TMap<UAttackDataAsset*, float> AttackCooldownMap;
+
+	UFUNCTION()
+	void InitAttacksCombo();
+
+	UFUNCTION()
+	void UpdateCooldownAttacksCombo(float DeltaTime);
+
 	UFUNCTION()
 	void SetMovementComponentActionMode(const EMovementMode Mode) const;
 
@@ -95,3 +116,5 @@ private:
 	float GetAltitudeAboveGround();
 
 };
+
+
