@@ -26,6 +26,7 @@ void ADragonBoss::OnEnemyPatrolling()
 void ADragonBoss::OnEnemyInvestigating()
 {
 	Super::OnEnemyInvestigating();
+	ReachEndSplinePoint();
 }
 
 void ADragonBoss::OnEnemyAttack(AActor* InAttackTarget)
@@ -106,6 +107,7 @@ UAttackDataAsset* ADragonBoss::GetAttackDataAsset()
 
 	if (AttacksCombo.Num() == 1)
 	{
+		SetCurrentAttackCombo(AttacksCombo[0]);
 		return AttacksCombo[0];
 	}
 
@@ -127,7 +129,8 @@ UAttackDataAsset* ADragonBoss::GetAttackDataAsset()
 	if (BestAttack)
 	{
 		BestAttack->bCanPerformAttack = false;
-		OnAttackStart.Broadcast(BestAttack);
+
+		SetCurrentAttackCombo(BestAttack);
 		
 		AttackCooldownMap.Add(BestAttack, BestAttack->Cooldown);
 
@@ -136,6 +139,8 @@ UAttackDataAsset* ADragonBoss::GetAttackDataAsset()
 		
 		return BestAttack;
 	}
+
+	SetCurrentAttackCombo(AttacksCombo[0]);
 	
 	return  AttacksCombo[0];
 }
@@ -173,6 +178,7 @@ void ADragonBoss::InitAttacksCombo()
 	{
 		Element->bCanPerformAttack = true;
 	}
+	SetCurrentAttackCombo(AttacksCombo[0]);
 }
 
 void ADragonBoss::BeginPlay()

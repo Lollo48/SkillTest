@@ -10,7 +10,7 @@
 // Sets default values
 ABossController::ABossController()
 {
-	CanHear = true;
+	CanHear = false;
 	CanSee = true;
 	CanTakeDamage = false;
 	SetUpPerceptionSystem();

@@ -50,6 +50,12 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category = "AI")
 	UAttackDataAsset* GetAttackDataAsset();
+
+	UFUNCTION(BlueprintCallable,Category = "AI")
+	void SetCurrentAttackCombo(UAttackDataAsset* InAttackCombo) {CurrentAttackCombo = InAttackCombo;}
+
+	UFUNCTION(BlueprintCallable,Category = "AI")
+	void PerformAttackCombo() {OnAttackStart.Broadcast(CurrentAttackCombo);}
 	
 protected:
 
@@ -61,6 +67,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category = "AI",meta = (AllowPrivateAccess = "true"))
 	TArray<UAttackDataAsset*> AttacksCombo;
+
+	UPROPERTY()
+	UAttackDataAsset* CurrentAttackCombo;
 
 	UPROPERTY()
 	bool bWantsFly = true;
