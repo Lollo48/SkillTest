@@ -61,47 +61,43 @@ void UBTTask_MoveFlyingEnemy::TickTask(UBehaviorTreeComponent& OwnerComp, uint8*
 {
 	FVector CurrentLocation = Entity->GetActorLocation();
 	FVector ToTarget = TargetLocation - CurrentLocation;
-	FVector Direction = ToTarget.GetSafeNormal();
-	FRotator TargetRotation = Direction.Rotation();
+
+	bool bCloseEnough = ToTarget.Size() <= AcceptanceRadius * 3.0f; 
 	
-	FRotator DesiredRotation = TargetRotation + RotationOffset;
+	if (!bCloseEnough)
+	{
+		FVector Direction = ToTarget.GetSafeNormal();
+		FRotator TargetRotation = Direction.Rotation();
+		DesiredRotation = TargetRotation + RotationOffset; 
+	}
+
 	FRotator CurrentActorRotation = Entity->GetActorRotation();
-	
 	FRotator SmoothedActorRotation = FMath::RInterpTo(CurrentActorRotation, DesiredRotation, DeltaSeconds, RotationSpeed);
 	Entity->SetActorRotation(SmoothedActorRotation);
-	
+
+	// Mesh Rotation
 	FRotator CurrentMeshRotation = Character->GetMesh()->GetRelativeRotation();
 	FRotator TargetMeshRotation = CurrentMeshRotation;
-	TargetMeshRotation.Roll = -TargetRotation.Pitch;
-
+	TargetMeshRotation.Roll = -DesiredRotation.Pitch; 
+	
 	FRotator SmoothedMeshRotation = FMath::RInterpTo(CurrentMeshRotation, TargetMeshRotation, DeltaSeconds, RotationSpeed);
 	Character->GetMesh()->SetRelativeRotation(SmoothedMeshRotation);
-	
+
+	// Movement
 	FVector NewLocation = FMath::VInterpConstantTo(CurrentLocation, TargetLocation, DeltaSeconds, CharacterSpeed);
 	Entity->SetActorLocation(NewLocation);
-	
+
+	// Debug
 	if (bDebug)
 	{
-		DrawDebugLine(
-			GetWorld(),
-			CurrentLocation,
-			TargetLocation,
-			FColor::Red,
-			false,
-			0.1f,
-			0,
-			3.0f 
-		);
+		DrawDebugLine(GetWorld(), CurrentLocation, TargetLocation, FColor::Red, false, 0.1f, 0, 3.0f);
+		LGDebug::Log("CurrentMeshRotation" + CurrentMeshRotation.ToString(), true);
 	}
-	
+
+	// Checks
 	bool bReachedLocation = FVector::Dist(NewLocation, TargetLocation) <= AcceptanceRadius;
 	bool bMeshAligned = FMath::Abs(CurrentMeshRotation.Roll - TargetMeshRotation.Roll) <= RotationTolerance;
 	bool bActorAligned = FMath::Abs(CurrentActorRotation.Yaw - DesiredRotation.Yaw) <= RotationTolerance;
-
-	if (bDebug)
-	{
-		LGDebug::Log("CurrentMeshRotation" + CurrentMeshRotation.ToString(), true);
-	}
 
 	if (bReachedLocation && bActorAligned && bMeshAligned)
 	{

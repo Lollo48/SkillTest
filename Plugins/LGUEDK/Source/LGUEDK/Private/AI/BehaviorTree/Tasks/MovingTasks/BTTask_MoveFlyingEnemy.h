@@ -56,4 +56,6 @@ private:
 
 	UPROPERTY()
 	APawn* Entity;
+	
+	FRotator DesiredRotation;
 };

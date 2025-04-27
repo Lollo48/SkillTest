@@ -27,6 +27,7 @@ void ADragonBoss::OnEnemyInvestigating()
 {
 	Super::OnEnemyInvestigating();
 	ReachEndSplinePoint();
+	Timer = 100.0f;
 }
 
 void ADragonBoss::OnEnemyAttack(AActor* InAttackTarget)

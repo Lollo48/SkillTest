@@ -92,7 +92,7 @@ FVector UBTTask_FindFlyingTargetLocation::TryFindFlyingTargetLocation(UBehaviorT
 	{
 		case EFlyingMode::Random:
 			TargetLocation = GetRandomFlyingLocation(StartLocation, InitialPosition, Direction, SearchRadius);
-			TargetLocation.Z = GetAltitudeAboveGround(TargetLocation);
+			TargetLocation.Z = FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround);
 		break;
 		case EFlyingMode::Circular:
 			TargetLocation = GetCircularFlyingLocation(InitialPosition);
@@ -100,7 +100,7 @@ FVector UBTTask_FindFlyingTargetLocation::TryFindFlyingTargetLocation(UBehaviorT
 		break;
 		case EFlyingMode::AroundActor:
 			TargetLocation = GetAroundActorLocation(Blackboard, StartLocation);
-			TargetLocation.Z = GetAltitudeAboveGround(TargetLocation);
+			TargetLocation.Z = FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround);
 		break;
 		case EFlyingMode::ToPoint:
 			TargetLocation = GetToPoint(StartLocation, InitialPosition);
@@ -198,7 +198,7 @@ FVector UBTTask_FindFlyingTargetLocation::GetRandomDirectionFromPreference() con
 float UBTTask_FindFlyingTargetLocation::GetAltitudeAboveGround(const FVector& Location)
 {
 	FHitResult Hit;
-	FVector TraceStart = Location + FVector(0, 0, 1000.f);
+	FVector TraceStart = Location;
 	FVector TraceEnd = Location - FVector(0, 0, MaxAltitudeFromGround + 5000.f);
 
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
@@ -215,7 +215,14 @@ float UBTTask_FindFlyingTargetLocation::GetAltitudeAboveGround(const FVector& Lo
 			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 30.f, 8, FColor::Green, false, 2.0f);
 	}
 
-	return bHit ? Hit.ImpactPoint.Z + FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround) : ControlledPawn->GetActorLocation().Z;
+	if (bHit)
+	{
+		return Hit.Location.Z + FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround);
+	}
+
+	float DefaultAltitude = ControlledPawn->GetActorLocation().Z - FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround);
+	return FMath::Max(DefaultAltitude, 200.f); 
+	
 }
 
 FVector UBTTask_FindFlyingTargetLocation::GetRandomFlyingLocation(const FVector& StartLocation,const FVector& InitialPosition, const FVector& Direction, float SearchRadius)

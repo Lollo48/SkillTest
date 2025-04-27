@@ -56,6 +56,9 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category = "AI")
 	void PerformAttackCombo() {OnAttackStart.Broadcast(CurrentAttackCombo);}
+
+	UFUNCTION(BlueprintCallable,Category = "AI")
+	float GetFlyingDuration() const {return FlyingDuration;}
 	
 protected:
 
