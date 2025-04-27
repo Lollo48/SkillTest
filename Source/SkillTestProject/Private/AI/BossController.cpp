@@ -155,7 +155,7 @@ void ABossController::HandleSight(AActor* Actor, FAIStimulus Stimulus)
 			GetWorld()->GetTimerManager().ClearTimer(LostSightTimerHandle);
 			//LGDebug::Log("TIMER PERSO ANNULLATO", true);
 		}
-
+		
 		if (BossEntity->GetState() == EEnemyState::Patrolling || BossEntity->GetState() == EEnemyState::Passive)
 		{
 			SetStateAsAttacking(Actor);

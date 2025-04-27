@@ -21,6 +21,10 @@ void ADragonBoss::OnEnemyPatrolling()
 {
 	Super::OnEnemyPatrolling();
 	SetMovementActionState(EMovementActionState::Walking);
+	if (MySpline->GetSplineMode()==ESplineMode::SplineModeB)
+	{
+		MySpline->SetCanPerformSpline(true);
+	}
 }
 
 void ADragonBoss::OnEnemyInvestigating()
@@ -33,6 +37,11 @@ void ADragonBoss::OnEnemyInvestigating()
 void ADragonBoss::OnEnemyAttack(AActor* InAttackTarget)
 {
 	Super::OnEnemyAttack(InAttackTarget);
+	
+	if (MySpline->GetSplineMode()==ESplineMode::SplineModeB)
+	{
+		MySpline->SetCanPerformSpline(false);
+	}
 }
 
 void ADragonBoss::OnEnemyDead(AActor* InAttackTarget)
