@@ -1,8 +1,9 @@
 <h1 align="center">
-  Lorenzo Grasso
+  Skill Test GP3
+ <h4 align="center"> Lorenzo Grasso </h4>
 </h1>
 
-<h4 align="center"> Skill Test GP3
+<h4 align="center">
 AI Programmer Specialization </h4>
 <h4 align="center">prototype of a dragon </h4>
 
