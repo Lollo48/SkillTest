@@ -1,9 +1,10 @@
 <h1 align="center">
-  Lorenzo Grasso
+  Skill Test GP3
 </h1>
 
-<h4 align="center"> Skill Test GP3
-AI Programmer Specialization</h4>
+<h4 align="center">
+AI Programmer Specialization </h4>
+<h4 align="center">prototype of a dragon </h4>
 
 Using C++, create task, service, and decorator nodes for an AI in Unreal and 3D, taking into account the following states: idle, attack, and investigating.
 DragonBoss AI is an advanced AI created in C++ for Unreal Engine 5, implementing a dynamic behavior system for a dragon boss character.
@@ -15,6 +16,10 @@ Introduces dynamic flying behavior,
 Supports combo-based attacks,
 Part of the investigation in flight,
 Integrates clear visual feedback for every state.
+
+
+https://github.com/user-attachments/assets/76afb255-a0c3-4162-bc8e-6d94035e03cd
+
 
 ## Key Features
 
