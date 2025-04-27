@@ -17,6 +17,10 @@ Supports combo-based attacks,
 Part of the investigation in flight,
 Integrates clear visual feedback for every state.
 
+
+https://github.com/user-attachments/assets/76afb255-a0c3-4162-bc8e-6d94035e03cd
+
+
 ## Key Features
 
 * Idle/Patrolling:
