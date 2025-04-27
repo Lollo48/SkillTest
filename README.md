@@ -1,6 +1,5 @@
 <h1 align="center">
   Skill Test GP3
- <h4 align="center"> Lorenzo Grasso </h4>
 </h1>
 
 <h4 align="center">
