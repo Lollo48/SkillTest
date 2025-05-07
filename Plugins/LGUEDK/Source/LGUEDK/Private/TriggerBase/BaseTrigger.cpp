@@ -13,9 +13,10 @@ ABaseTrigger::ABaseTrigger()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ABaseTrigger::EnableTrigger()
+void ABaseTrigger::EnableTrigger(AActor* InTriggerInstigator)
 {
 	OnEnableTriggerDispatcher.Broadcast();
+	TriggerInstigator = InTriggerInstigator;
 	
 	if (TriggerBehavior == nullptr)
 	{
@@ -24,7 +25,7 @@ void ABaseTrigger::EnableTrigger()
 	}
 	SetIsTriggered(true);
 	TriggerBehavior->Enable(this);
-	ActivateTotem();
+	ActivateTotem(InTriggerInstigator);
 }
 
 void ABaseTrigger::DisableTrigger()
@@ -38,6 +39,7 @@ void ABaseTrigger::DisableTrigger()
 	SetCanBeTriggered(true);
 	SetIsTriggered(false);
 	TriggerBehavior->Disable(this);
+	DeactivateTotem();
 }
 
 void ABaseTrigger::OnTriggering(float DeltaTime)
@@ -47,7 +49,7 @@ void ABaseTrigger::OnTriggering(float DeltaTime)
 		LGDebug::Log("TriggerBehavior is null", true);
 		return;
 	}
-	
+	OnTriggeringBP(DeltaTime);
 	TriggerBehavior->OnTriggering(DeltaTime,this);
 }
 
@@ -64,7 +66,7 @@ void ABaseTrigger::BindToOnEnable(const FEnableTrigger& Context,bool bUnique)
 
 void ABaseTrigger::UnBindToOnEnable(const FEnableTrigger& Context)
 {
-	OnDisableTriggerDispatcher.Remove(Context);
+	OnEnableTriggerDispatcher.Remove(Context);
 }
 
 void ABaseTrigger::BindToOnDisable(const FDisableTrigger& Context, bool bUnique)

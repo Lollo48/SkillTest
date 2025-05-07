@@ -20,8 +20,6 @@ protected:
 	explicit UBTTask_MoveFlyingEnemy(FObjectInitializer const& ObjectInitializer);
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-
-	float CharacterSpeed = 0.0f;
 	
 private:
 
@@ -30,18 +28,18 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "AI|Movement")
 	float IncrementMovementSpeed = 4000.0f;
-	
+
 	UPROPERTY(EditAnywhere, Category = "AI|Movement")
-	float RotationSpeed = 5.0f;
+	float BrakingDecelerationFlying = 2000.f;
+
+	UPROPERTY(EditAnywhere, Category = "AI|Movement")
+	bool bUseControllerDesiredRotation = false;
+
+	UPROPERTY(EditAnywhere, Category = "AI|Movement")
+	bool bOrientRotationToMovement = false;
 
 	UPROPERTY(EditAnywhere, Category = "AI|Movement")
 	float AcceptanceRadius = 5.0f;
-	
-	UPROPERTY(EditAnywhere, Category = "AI|Movement")
-	float RotationTolerance = 5.0f;
-
-	UPROPERTY(EditAnywhere, Category = "AI|Movement")
-	FRotator RotationOffset;
 
 	UPROPERTY(EditAnywhere, Category = "AI|Settings")
 	bool bDebug;
@@ -49,13 +47,6 @@ private:
 	FVector TargetLocation;
 
 	UPROPERTY()
-	UCharacterMovementComponent* MovementComp;
-
-	UPROPERTY()
-	ACharacter* Character;
-
-	UPROPERTY()
 	APawn* Entity;
 	
-	FRotator DesiredRotation;
 };

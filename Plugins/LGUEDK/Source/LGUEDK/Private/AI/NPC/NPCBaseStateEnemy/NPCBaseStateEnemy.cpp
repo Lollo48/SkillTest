@@ -4,69 +4,89 @@
 #include "AI/NPC/NPCBaseStateEnemy/NPCBaseStateEnemy.h"
 
 #include "AI/NPC/NPCBaseStateEnemy/NPCBaseStateEnemyController.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 
 
 ANPCBaseStateEnemy::ANPCBaseStateEnemy()
 {
-	AttackTarget = nullptr;
+	Target = nullptr;
 	
 }
 
-void ANPCBaseStateEnemy::OnEnemyPassive()
+void ANPCBaseStateEnemy::OnEntityPassive()
 {
-	Super::OnEnemyPassive();
+	Super::OnEntityPassive();
 }
 
-void ANPCBaseStateEnemy::OnEnemyPatrolling()
+void ANPCBaseStateEnemy::OnEntityPatrolling()
 {
-	Super::OnEnemyPatrolling();
+	Super::OnEntityPatrolling();
 }
 
-void ANPCBaseStateEnemy::OnEnemyInvestigating()
+void ANPCBaseStateEnemy::OnEntityInvestigating()
 {
-	SetEnemyState(EEnemyState::Investigating);
+	if (!GetIsEnable())return;
+	if (!GetIsInitialize())return;
+	
+	SetEntityState(EEnemyState::Investigating);
 	OnStateInvestigating.Broadcast();
-	OnEnemyInvestigatingBP();
+	OnEntityInvestigatingBP();
 }
 
-void ANPCBaseStateEnemy::OnEnemyChasing(AActor* InAttackTarget)
+void ANPCBaseStateEnemy::OnEntityChasing(AActor* InTarget)
 {
-	SetAttackTarget(InAttackTarget);
-	SetEnemyState(EEnemyState::Chasing);
-	OnStateChasing.Broadcast(InAttackTarget);
-	OnEnemyChasingBP(InAttackTarget);
+	if (!GetIsEnable())return;
+	if (!GetIsInitialize())return;
+	
+	SetTarget(InTarget);
+	SetEntityState(EEnemyState::Chasing);
+	OnStateChasing.Broadcast(InTarget);
+	OnEntityChasingBP(InTarget);
 }
 
-void ANPCBaseStateEnemy::OnEnemyPending(AActor* InAttackTarget)
+void ANPCBaseStateEnemy::OnEntityPending(AActor* InTarget)
 {
-	SetAttackTarget(InAttackTarget);
-	SetEnemyState(EEnemyState::Pending);
-	OnStatePending.Broadcast(InAttackTarget);
-	OnEnemyPendingBP(InAttackTarget);
+	if (!GetIsEnable())return;
+	if (!GetIsInitialize())return;
+	
+	SetTarget(InTarget);
+	SetEntityState(EEnemyState::Pending);
+	OnStatePending.Broadcast(InTarget);
+	OnEntityPendingBP(InTarget);
 }
 
-void ANPCBaseStateEnemy::OnEnemyAttack(AActor* InAttackTarget)
+void ANPCBaseStateEnemy::OnEntityAttack(AActor* InTarget)
 {
-	SetAttackTarget(InAttackTarget);
-	SetEnemyState(EEnemyState::Attacking);
-	OnStateAttacking.Broadcast(InAttackTarget);
-	OnEnemyAttackBP(InAttackTarget);
+	if (!GetIsEnable())return;
+	if (!GetIsInitialize())return;
+	
+	SetTarget(InTarget);
+	SetEntityState(EEnemyState::Attacking);
+	OnStateAttacking.Broadcast(InTarget);
+	OnEntityAttackBP(InTarget);
 }
 
-void ANPCBaseStateEnemy::OnEnemyDead(AActor* InAttackTarget)
+void ANPCBaseStateEnemy::OnEntityDead(AActor* InSelf)
 {
-	SetEnemyState(EEnemyState::Dead);
+	if (!GetIsEnable())return;
+	if (!GetIsInitialize())return;
+	
+	SetEntityState(EEnemyState::Dead);
 	OnStateDead.Broadcast(this);
-	OnEnemyDeadBP(this);
-	DisableEntity();
-	DisableEntityEffectBP();
+	OnEntityDeadBP(this);
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionProfileName("Ragdoll", true);
+	GetMesh()->SetSimulatePhysics(true);
+	
+	DisableEntityEffect();
 }
 
 UNPCBaseStateEnemyDataAsset* ANPCBaseStateEnemy::GetDataAsset() const
 {
-	if (!NPCEnemyStateDataAsset)
+	if (!IsValid(NPCEnemyStateDataAsset))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NPCEnemyStateDataAsset is nullptr in %s"), *GetName());
 		return nullptr;

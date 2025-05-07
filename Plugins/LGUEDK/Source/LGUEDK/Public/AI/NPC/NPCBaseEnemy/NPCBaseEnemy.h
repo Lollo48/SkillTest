@@ -7,7 +7,6 @@
 #include "AI/Enumerators/EnemyState.h"
 #include "AI/NPC/NPCBase/NPCBase.h"
 #include "AI/NPC/NPCData/NPCBaseEnemyDataAsset.h"
-#include "BehaviorTree/BehaviorTree.h"
 #include "NPCBaseEnemy.generated.h"
 
 
@@ -33,17 +32,21 @@ public:
 	FStatePatrolling OnStatePatrolling;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "On Enemy Passive"))
-	virtual void OnEnemyPassive();
+	virtual void OnEntityPassive();
 
 	UFUNCTION(BlueprintCallable , meta = (DisplayName = "On Enemy Patrolling"))
-	virtual void OnEnemyPatrolling();
+	virtual void OnEntityPatrolling();
 
+	UFUNCTION(BlueprintCallable , meta = (DisplayName = "Enemy State"))
 	void SetMovementSpeed(EMovementSpeed MovementSpeed) const;
 
 	UFUNCTION(BlueprintCallable , meta = (DisplayName = "Enemy State"))
 	EEnemyState GetState() const { return CurrentState; }
 	UFUNCTION(BlueprintCallable , meta = (DisplayName = "Enemy State"))
-	void SetEnemyState(const EEnemyState NewState) { CurrentState = NewState; }
+	void SetEntityState(const EEnemyState NewState) { CurrentState = NewState; }
+
+	virtual void EnableEntity() override { Super::EnableEntity(); };
+	virtual void DisableEntity() override { Super::DisableEntity(); };
 	
 protected:
 	
@@ -56,15 +59,11 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Init() override;
-
-	virtual void EnableEntity() override { Super::EnableEntity(); };
-	virtual void DisableEntity() override { Super::DisableEntity(); };
 	
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
-	void OnEnemyPassiveBP();
+	void OnEntityPassiveBP();
 
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
-	void OnEnemyPatrollingBP();
-
+	void OnEntityPatrollingBP();
 	
 };

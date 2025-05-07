@@ -16,7 +16,7 @@ class LGUEDK_API ANPCBaseStateEnemyController : public ANPCPerceptionSystemContr
 
 public:
 	
-	ANPCBaseStateEnemyController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	explicit ANPCBaseStateEnemyController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	virtual void SetStateAsPassive() override;
 
@@ -48,6 +48,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnPossess(APawn* InPawn) override { Super::OnPossess(InPawn); };
+
+	virtual void InitializeEnemyBase() override {Super::InitializeEnemyBase();} 
 	
 	virtual void InitializeBlackboardValues() override { Super::InitializeBlackboardValues(); };
 

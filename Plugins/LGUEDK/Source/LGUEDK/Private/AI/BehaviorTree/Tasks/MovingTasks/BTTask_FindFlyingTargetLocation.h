@@ -97,7 +97,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
 	float MaxRotationPitch = 100.f;
 	
-
 	bool bCanExplore;
 
 	FVector CurrentHitLocation;

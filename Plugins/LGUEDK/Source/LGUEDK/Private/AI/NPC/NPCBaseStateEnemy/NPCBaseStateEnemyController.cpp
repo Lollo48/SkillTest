@@ -9,7 +9,7 @@
 
 
 ANPCBaseStateEnemyController::ANPCBaseStateEnemyController(const FObjectInitializer& ObjectInitializer)
-	:Super(ObjectInitializer)
+	: Super(ObjectInitializer)
 {
 	
 }
@@ -54,4 +54,5 @@ void ANPCBaseStateEnemyController::BeginPlay()
 {
 	Super::BeginPlay();
 }
+
 

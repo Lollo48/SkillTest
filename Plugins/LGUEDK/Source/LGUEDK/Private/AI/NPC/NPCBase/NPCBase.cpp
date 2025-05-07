@@ -9,7 +9,9 @@
 ANPCBase::ANPCBase()
 {
 	Controller = nullptr;
-	
+	BehaviorTree = nullptr;
+	bIsInitialize = false;
+	bIsEnable = false;
 }
 
 UBehaviorTree* ANPCBase::GetBehaviorTree() const
@@ -21,7 +23,15 @@ void ANPCBase::BeginPlay()
 {
 	Super::BeginPlay();
 	Init();
-	
+}
+
+void ANPCBase::Init()
+{
+	MeshLocation = GetMesh()->GetRelativeLocation();
+	MeshRotation = GetMesh()->GetRelativeRotation();
+	SetEntityCollision();
+	InitBP();
+	SetIsInitialize(true);
 }
 
 void ANPCBase::EnableEntity()
@@ -29,25 +39,35 @@ void ANPCBase::EnableEntity()
 	AAIController* AIController = Cast<AAIController>(GetController());
 	if (!AIController)return;
 	if (!AIController->GetBrainComponent())return;
-	if (!GetCapsuleComponent())return;
 	
 	AIController->GetBrainComponent()->StartLogic();
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
 	EnableEntityBP();
+	SetIsEnable(true);
 }
 
 void ANPCBase::DisableEntity()
 {
 	AAIController* AIController = Cast<AAIController>(GetController());
-	if (!AIController)
-	{
-		return;
-	}
-
+	if (!AIController)return;
 	if (!AIController->GetBrainComponent())return;
-	if (!GetCapsuleComponent())return;
 	
-	AIController->GetBrainComponent()->StopLogic("Dead");
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	AIController->GetBrainComponent()->StopLogic("Event");
 	DisableEntityBP();
+	SetIsEnable(false);
+}
+
+void ANPCBase::SetEntityCollision()
+{
+	GetMesh()->SetSimulatePhysics(false);
+	GetMesh()->SetCollisionProfileName(EnemyMeshCollisionProfileName);
+	GetMesh()->SetCollisionObjectType(CollisionMeshChannel);
+	
+	GetCapsuleComponent()->SetCollisionProfileName(EnemyCapsuleCollisionProfileName);
+	GetCapsuleComponent()->SetCollisionObjectType(CollisionCapsuleChannel);
+}
+
+void ANPCBase::SetEntityTransform()
+{
+	GetMesh()->SetRelativeLocation(MeshLocation);
+	GetMesh()->SetRelativeRotation(MeshRotation);
 }

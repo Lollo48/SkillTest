@@ -15,18 +15,21 @@ ANPCBaseEnemy::ANPCBaseEnemy()
 	
 }
 
-void ANPCBaseEnemy::OnEnemyPassive()
+void ANPCBaseEnemy::OnEntityPassive()
 {
-	SetEnemyState(EEnemyState::Passive);
+	SetEntityState(EEnemyState::Passive);
 	OnStatePassive.Broadcast();
-	OnEnemyPassiveBP();
+	OnEntityPassiveBP();
 }
 
-void ANPCBaseEnemy::OnEnemyPatrolling()
+void ANPCBaseEnemy::OnEntityPatrolling()
 {
-	SetEnemyState(EEnemyState::Patrolling);
+	if (!GetIsEnable())return;
+	if (!GetIsInitialize())return;
+	
+	SetEntityState(EEnemyState::Patrolling);
 	OnStatePatrolling.Broadcast();
-	OnEnemyPatrollingBP();
+	OnEntityPatrollingBP();
 }
 
 void ANPCBaseEnemy::SetMovementSpeed(const EMovementSpeed MovementSpeed) const

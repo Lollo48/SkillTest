@@ -109,7 +109,8 @@ void AFlowAttackManager::UpdateAttackers(EEnemyType EnemyType)
 	
 	ANPCBaseStateEnemy* Enemy = Cast<ANPCBaseStateEnemy>(EnemyToActivate);
 	ANPCBaseStateEnemyController* EnemyController = Cast<ANPCBaseStateEnemyController>(EnemyToActivate->GetInstigatorController());
-	AActor* Target = Enemy->GetAttackTarget();
+	if (!Enemy || !EnemyController) return;
+	AActor* Target = Enemy->GetTarget();
 	if (!Target)return;
 
 	EnemyController->SetStateAsAttacking(Target);
@@ -123,7 +124,7 @@ void AFlowAttackManager::ForceRegisterEnemy(AActor* Requester, const EEnemyType 
 	ANPCBaseStateEnemy* EnemyState = Cast<ANPCBaseStateEnemy>(Requester);
 	if (!EnemyState) return;
 	
-	AActor* Target = EnemyState->GetAttackTarget();
+	AActor* Target = EnemyState->GetTarget();
 	if (!Target) return;
 	
 	const int32 MaxAllowed = (EnemyType == EEnemyType::Melee) ? MaxMeleeAttackers : MaxRangedAttackers;

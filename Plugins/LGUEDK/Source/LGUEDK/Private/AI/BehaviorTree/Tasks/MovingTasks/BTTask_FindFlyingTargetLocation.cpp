@@ -100,7 +100,6 @@ FVector UBTTask_FindFlyingTargetLocation::TryFindFlyingTargetLocation(UBehaviorT
 		break;
 		case EFlyingMode::AroundActor:
 			TargetLocation = GetAroundActorLocation(Blackboard, StartLocation);
-			TargetLocation.Z = FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround);
 		break;
 		case EFlyingMode::ToPoint:
 			TargetLocation = GetToPoint(StartLocation, InitialPosition);
@@ -288,6 +287,8 @@ FVector UBTTask_FindFlyingTargetLocation::GetAroundActorLocation(UBlackboardComp
 		DrawDebugSphere(GetWorld(), Center, MaxDist, 16, FColor::Red, false, 1.5f);
 		DrawDebugLine(GetWorld(), Center, TargetLocation, FColor::Orange, false, 1.5f);
 	}
+
+	TargetLocation.Z = Center.Z + FMath::FRandRange(MinAltitudeFromGround, MaxAltitudeFromGround);
 
 	return TargetLocation;
 }

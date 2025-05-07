@@ -19,7 +19,6 @@ protected:
 	
 	explicit UBTDecorator_IsWithInRange(FObjectInitializer const& ObjectInitializer);
 	virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
-	
 
 public:
 	

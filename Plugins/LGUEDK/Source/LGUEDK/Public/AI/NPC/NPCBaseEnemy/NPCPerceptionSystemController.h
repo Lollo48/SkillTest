@@ -21,7 +21,7 @@ class LGUEDK_API ANPCPerceptionSystemController : public ANPCBaseController
 
 public:
 	
-	ANPCPerceptionSystemController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	explicit ANPCPerceptionSystemController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintCallable, Category = "State")
 	virtual void SetStateAsPassive();
@@ -73,6 +73,8 @@ protected:
 	virtual void BeginPlay() override;
 	
 	virtual void OnPossess(APawn* InPawn) override;
+
+	virtual void InitializeEnemyBase() override {Super::InitializeEnemyBase();} 
 	
 	virtual void InitializeBlackboardValues() override;
 
@@ -81,11 +83,11 @@ protected:
 	virtual void CustomController() override{Super::CustomController();};
 	
 	UFUNCTION()
-	virtual void HandleSight(AActor* Actor, FAIStimulus Stimulus) { };
+	virtual void HandleSight(AActor* Actor, FAIStimulus Stimulus) {if (!bIsEnabled)return; };
 	UFUNCTION()
-	virtual void HandleHear(AActor* Actor, FAIStimulus Stimulus) { };
+	virtual void HandleHear(AActor* Actor, FAIStimulus Stimulus) {if (!bIsEnabled)return; };
 	UFUNCTION()
-	virtual void HandleDamage(AActor* Actor, FAIStimulus Stimulus) { };
+	virtual void HandleDamage(AActor* Actor, FAIStimulus Stimulus) {if (!bIsEnabled)return; };
 	
 	UFUNCTION()
 	virtual void OnLostSight() {};
@@ -93,6 +95,11 @@ protected:
 	virtual void OnLostHear() {};
 	UFUNCTION()
 	virtual void OnLostDamage() {};
+
+	UFUNCTION()
+	virtual void RegisterToPerceptionEvents();
+	UFUNCTION()
+	virtual void RemoveToPerceptionEvents();
 
 	UPROPERTY()
 	UAIPerceptionComponent* AIPerceptionComponent;
@@ -116,6 +123,7 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
 	void SetStateAsPatrollingBP();
+	
 };
 
 

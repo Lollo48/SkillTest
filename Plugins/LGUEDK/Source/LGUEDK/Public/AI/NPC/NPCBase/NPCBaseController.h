@@ -16,7 +16,7 @@ class LGUEDK_API ANPCBaseController : public AAIController
 
 public:
 	
-	 ANPCBaseController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	explicit ANPCBaseController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(Blueprintable,BlueprintCallable)
 	ANPCBase* GetControlledPawn() const {return ControlledPawn;}
@@ -25,12 +25,24 @@ protected:
 
 	UPROPERTY()
 	ANPCBase* ControlledPawn;
+
+	UPROPERTY()
+	bool bIsInitialized;
+
+	UPROPERTY()
+	bool bIsEnabled = false;
 	
 	UFUNCTION()
 	virtual void OnPossess(APawn* InPawn) override;
 
 	UFUNCTION()
+	void InitializeControllerAndBlackboard();
+
+	UFUNCTION()
 	virtual void InitializeBlackboardValues() {};
+
+	UFUNCTION()
+	virtual void InitializeEnemyBase(){};
 
 	UFUNCTION()
 	virtual void CustomController() {};

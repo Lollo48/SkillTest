@@ -31,10 +31,13 @@ public:
 	bool GetIsClear() const {return bIsClear;}
 	
 	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
-	void SpawnEnemy(TSubclassOf<ANPCBase> const& EnemyClass);
+	virtual void SpawnEnemy(TSubclassOf<ANPCBase> const& EnemyClass);
 	
 	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
 	int32 GetSpawnIndex() const {return Index;}
+
+	UFUNCTION(BlueprintCallable, Category = "Spawn")
+	void OnEnemyDead(AActor* InAttackTarget);
 	
 protected:
 	
@@ -43,6 +46,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	int32 Index;
+
+	TArray<FVector> PossibleSpawnPoints;
+
+	UFUNCTION(BlueprintCallable, Category = "Spawn")
+	void GeneratePoints();
 	
 private:
 
@@ -52,19 +60,11 @@ private:
 	float DistanceBetweenEnemies = 100.0f;
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	bool bDrawDebug;
-
-	TArray<FVector> PossibleSpawnPoints;
 	
 	UPROPERTY()
 	bool bIsClear;
-
-	UFUNCTION(BlueprintCallable, Category = "Spawn")
-	void OnEnemyDead(AActor* InAttackTarget);
 	
 	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
 	void DrawDebug();
-
-	UFUNCTION(BlueprintCallable, Category = "Spawn")
-	TArray<FVector> GeneratePoints();
 	
 };

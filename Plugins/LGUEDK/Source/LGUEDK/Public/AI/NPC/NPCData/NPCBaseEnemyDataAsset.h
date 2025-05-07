@@ -9,7 +9,7 @@
 
 
 UCLASS()
-class LGUEDK_API UNPCBaseEnemyDataAsset : public UPrimaryDataAsset
+class LGUEDK_API UNPCBaseEnemyDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 

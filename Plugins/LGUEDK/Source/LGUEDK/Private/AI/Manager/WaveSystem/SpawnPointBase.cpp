@@ -26,6 +26,7 @@ void ASpawnPointBase::BeginPlay()
 {
 	Super::BeginPlay();
 	UWaveManagerUtility::InitSpawnPoint(this);
+	GeneratePoints();
 }
 
 void ASpawnPointBase::SpawnEnemy(TSubclassOf<ANPCBase>const& EnemyClass) 
@@ -33,12 +34,13 @@ void ASpawnPointBase::SpawnEnemy(TSubclassOf<ANPCBase>const& EnemyClass)
 	if (!EnemyClass)return;
 
 	if (PossibleSpawnPoints.Num() == 0)
-		PossibleSpawnPoints = GeneratePoints();
+		GeneratePoints();
 	
 	int32 InIndex = FMath::RandRange(0, PossibleSpawnPoints.Num() - 1);
+	if(!PossibleSpawnPoints.IsValidIndex(InIndex))return;
 	FVector SpawnPoint = PossibleSpawnPoints[InIndex];
-	SpawnPoint.Z += 50.f;
-	PossibleSpawnPoints.Remove(SpawnPoint);
+	PossibleSpawnPoints.RemoveAt(InIndex);
+	SpawnPoint.Z += 150.f;
 	
 	const FRotator SpawnRotation = FRotator::ZeroRotator;
 	
@@ -60,6 +62,7 @@ void ASpawnPointBase::SpawnEnemy(TSubclassOf<ANPCBase>const& EnemyClass)
 
 		if (ANPCBaseStateEnemy* EnemyState = Cast<ANPCBaseStateEnemy>(SpawnedEnemy))
 		{
+			EnemyState->EnableEntityEffect();
 			EnemyState->OnStateDead.AddDynamic(this, &ASpawnPointBase::OnEnemyDead);
 		}
 	}
@@ -72,11 +75,11 @@ void ASpawnPointBase::DrawDebug()
 	DrawDebugSphere(GetWorld(), GetActorLocation(), SpawnRadius, 12, FColor::Green, false, 0.01f);
 }
 
-TArray<FVector> ASpawnPointBase::GeneratePoints()
+void ASpawnPointBase::GeneratePoints()
 {
+	PossibleSpawnPoints = TArray<FVector>();
 	FVector SpawnLocation = GetActorLocation();
-	TArray<FVector> CurrentSpawnPoint;
-	return CurrentSpawnPoint = UEQSUtility::GenerateGridPoints(SpawnLocation,SpawnRadius,DistanceBetweenEnemies);
+	PossibleSpawnPoints = UEQSUtility::GenerateGridPoints(SpawnLocation,SpawnRadius,DistanceBetweenEnemies);
 }
 
 void ASpawnPointBase::OnEnemyDead(AActor* InAttackTarget)

@@ -47,24 +47,24 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FStateDead OnStateDead;
 
-	virtual void OnEnemyPassive() override;
+	virtual void OnEntityPassive() override;
 
-	virtual void OnEnemyPatrolling() override;
+	virtual void OnEntityPatrolling() override;
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "On Enemy Investigating"))
-	virtual void OnEnemyInvestigating();
+	virtual void OnEntityInvestigating();
 	
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "On Enemy Chasing"))
-	virtual void OnEnemyChasing(AActor* InAttackTarget);
+	virtual void OnEntityChasing(AActor* InTarget);
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "On Enemy Pending"))
-	virtual void OnEnemyPending(AActor* InAttackTarget);
+	virtual void OnEntityPending(AActor* InTarget);
 	
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "On Enemy Attack"))
-	virtual void OnEnemyAttack(AActor* InAttackTarget);
+	virtual void OnEntityAttack(AActor* InTarget);
 	
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "On Enemy Dead"))
-	virtual void OnEnemyDead(AActor* InAttackTarget);
+	virtual void OnEntityDead(AActor* InSelf);
 	
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	UNPCBaseStateEnemyDataAsset* GetDataAsset() const;
@@ -79,15 +79,18 @@ public:
 	void SetMovementActionState(EMovementActionState InMovementActionState) { MovementActionState = InMovementActionState; }
 	
 	UFUNCTION(BlueprintCallable)
-	void SetAttackTarget(AActor* Target) { AttackTarget = Target; }
+	void SetTarget(AActor* InTarget) { Target = InTarget; }
 	
 	UFUNCTION(BlueprintPure)
-	AActor* GetAttackTarget() const { return AttackTarget; }
+	AActor* GetTarget() const { return Target; }
+	
+	virtual void EnableEntity() override { Super::EnableEntity(); };
+	virtual void DisableEntity() override { Super::DisableEntity(); };
 	
 protected:
 	
 	UPROPERTY()
-	AActor* AttackTarget;
+	AActor* Target;
 	
 	UPROPERTY()
 	UNPCBaseStateEnemyDataAsset* NPCEnemyStateDataAsset;
@@ -99,19 +102,16 @@ protected:
 
 	virtual void Init() override;
 
-	virtual void EnableEntity() override { Super::EnableEntity(); };
-	virtual void DisableEntity() override { Super::DisableEntity(); };
-
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
-	void OnEnemyInvestigatingBP();
+	void OnEntityInvestigatingBP();
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
-	void OnEnemyChasingBP(AActor* InAttackTarget);
+	void OnEntityChasingBP(AActor* InAttackTarget);
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
-	void OnEnemyPendingBP(AActor* InAttackTarget);
+	void OnEntityPendingBP(AActor* InAttackTarget);
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
-	void OnEnemyAttackBP(AActor* InAttackTarget);
+	void OnEntityAttackBP(AActor* InAttackTarget);
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
-	void OnEnemyDeadBP(AActor* InAttackTarget);
+	void OnEntityDeadBP(AActor* InAttackTarget);
 	
 };
 

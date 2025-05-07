@@ -19,15 +19,33 @@ ANPCPerceptionSystemController::ANPCPerceptionSystemController(const FObjectInit
 	:Super(ObjectInitializer)
 {
 	//LGDebug::Log("ANPCPerceptionSystemController COSTRUTTORE",true);
+	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
+	SetPerceptionComponent(*AIPerceptionComponent);
+
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
+	HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("HearingConfig"));
+	DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
 }
 
 void ANPCPerceptionSystemController::SetStateAsPassive()
 {
+	bIsEnabled = false;
+	RemoveToPerceptionEvents();
+	AIPerceptionComponent->Deactivate();
+	AIPerceptionComponent->SetActive(false);
+	AIPerceptionComponent->SetComponentTickEnabled(false);
+	SetActorTickEnabled(false);
 	SetStateAsPassiveBP();
 }
 
 void ANPCPerceptionSystemController::SetStateAsPatrolling()
 {
+	bIsEnabled = true;
+	RegisterToPerceptionEvents();
+	AIPerceptionComponent->Activate();
+	AIPerceptionComponent->SetActive(true);
+	AIPerceptionComponent->SetComponentTickEnabled(true);
+	SetActorTickEnabled(true);
 	SetStateAsPatrollingBP();
 }
 
@@ -39,6 +57,7 @@ void ANPCPerceptionSystemController::BeginPlay()
 void ANPCPerceptionSystemController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	SetUpPerceptionSystem();
 }
 
 void ANPCPerceptionSystemController::InitializeBlackboardValues()
@@ -46,12 +65,23 @@ void ANPCPerceptionSystemController::InitializeBlackboardValues()
 	Super::InitializeBlackboardValues();
 }
 
+void ANPCPerceptionSystemController::RegisterToPerceptionEvents()
+{
+	if (CanSee)
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ANPCPerceptionSystemController::HandleSight);
+	if (CanHear)
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ANPCPerceptionSystemController::HandleHear);
+	if (CanTakeDamage)
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this,&ANPCPerceptionSystemController::HandleDamage);
+}
+
+void ANPCPerceptionSystemController::RemoveToPerceptionEvents()
+{
+	AIPerceptionComponent->OnTargetPerceptionUpdated.RemoveAll(this);
+}
 
 void ANPCPerceptionSystemController::SetUpPerceptionSystem()
 {
-	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
-	SetPerceptionComponent(*AIPerceptionComponent);
-
 	if (CanSee)
 		SetUpSightConfig();
 	if (CanHear)
@@ -62,7 +92,6 @@ void ANPCPerceptionSystemController::SetUpPerceptionSystem()
 
 void ANPCPerceptionSystemController::SetUpSightConfig()
 {
-	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
 	if (SightConfig)
 	{
 		SightConfig->SightRadius = SightRadius;
@@ -75,7 +104,6 @@ void ANPCPerceptionSystemController::SetUpSightConfig()
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
 
 		//LGDebug::Log("inizialize senso vista ",true);
-		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ANPCPerceptionSystemController::HandleSight);
 		AIPerceptionComponent->ConfigureSense(*SightConfig);
 		AIPerceptionComponent->SetDominantSense(*SightConfig->GetSenseImplementation());
 	}
@@ -83,7 +111,7 @@ void ANPCPerceptionSystemController::SetUpSightConfig()
 
 void ANPCPerceptionSystemController::SetUpHearingConfig()
 {
-	HearingConfig = CreateDefaultSubobject<UAISenseConfig_Hearing>(TEXT("Hearing Config"));
+	
 	if (HearingConfig)
 	{
 		HearingConfig->HearingRange = HearingRange;
@@ -91,20 +119,17 @@ void ANPCPerceptionSystemController::SetUpHearingConfig()
 		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
-
-		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ANPCPerceptionSystemController::HandleHear);
+		
 		AIPerceptionComponent->ConfigureSense(*HearingConfig);
 	}
 }
 
 void ANPCPerceptionSystemController::SetUpDamageConfig()
 {
-	DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("Damage Config"));
+	
 	if (DamageConfig)
 	{
 		DamageConfig->SetMaxAge(DamageMaxAge);
-
-		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this,&ANPCPerceptionSystemController::HandleDamage);
 		AIPerceptionComponent->ConfigureSense(*DamageConfig);
 	}
 }

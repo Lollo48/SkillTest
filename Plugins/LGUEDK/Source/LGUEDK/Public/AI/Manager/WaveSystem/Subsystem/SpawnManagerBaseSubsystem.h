@@ -34,7 +34,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FEntityDeadDispatcher OnEntityDead;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable,Category = "SpawnManager")
 	int32 GetAliveEnemies() const { return AliveEnemies; }
 
 	UFUNCTION()

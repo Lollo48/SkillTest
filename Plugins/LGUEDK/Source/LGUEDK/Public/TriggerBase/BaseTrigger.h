@@ -21,21 +21,6 @@ class LGUEDK_API ABaseTrigger : public AActor
     
 public:    
 	ABaseTrigger();
-
-protected:
-	
-	UPROPERTY(EditDefaultsOnly,Instanced,Category = "Trigger")
-	UTriggerbehaviorBase* TriggerBehavior;
-
-	UPROPERTY(EditDefaultsOnly,Category = "Trigger")
-	FGameplayTag Name;
-
-	UPROPERTY()
-	bool bCanBeTriggered;
-	
-	virtual void BeginPlay() override;
-	
-public:
 	
 	virtual void Tick(float DeltaTime) override;
 
@@ -46,7 +31,7 @@ public:
 	FDisableTriggerDispatcher OnDisableTriggerDispatcher;
 
 	UFUNCTION(BlueprintCallable, Category = "Trigger")
-	void EnableTrigger();
+	void EnableTrigger(AActor* InTriggerInstigator);
 
 	UFUNCTION(BlueprintCallable, Category = "Trigger")
 	void DisableTrigger();
@@ -54,8 +39,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Trigger")
 	void OnTriggering(float DeltaTime);
 
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "Trigger")
+	AActor* GetTriggerInstigator() const { return TriggerInstigator; }
+
 	UFUNCTION()
-	virtual void ActivateTotem(){ActivateTotemBP();};
+	virtual void ActivateTotem(AActor* InTriggerInstigator){ActivateTotemBP(InTriggerInstigator);};
 
 	UFUNCTION()
 	virtual void DeactivateTotem(){DeactivateTotemBP();};
@@ -92,15 +80,31 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Trigger")
 	FGameplayTag GetGameplayTag() const { return Name; }
-
-
+	
 protected:
 	
+	UPROPERTY(EditDefaultsOnly,Instanced,Category = "Trigger")
+	UTriggerbehaviorBase* TriggerBehavior;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Trigger")
+	FGameplayTag Name;
+
+	UPROPERTY()
+	AActor* TriggerInstigator;
+
+	UPROPERTY()
+	bool bCanBeTriggered;
+	
+	virtual void BeginPlay() override;
+
 	UFUNCTION(BlueprintImplementableEvent,Category="Triggerbehavior")
-	void ActivateTotemBP();
+	void ActivateTotemBP(AActor* InTriggerInstigator);
 	
 	UFUNCTION(BlueprintImplementableEvent,Category="Triggerbehavior")
 	void DeactivateTotemBP();
+
+	UFUNCTION(BlueprintImplementableEvent,Category="Triggerbehavior")
+	void OnTriggeringBP(float DeltaTime);
 	
 private:
 	

@@ -24,7 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static USpawnManagerBaseSubsystem* GetSpawnManagerSubsystem(){ return SpawnManagerSubsystem; }
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static int32 GetAliveEnemies();
 
 	UFUNCTION(BlueprintCallable)

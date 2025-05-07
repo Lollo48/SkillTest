@@ -3,6 +3,7 @@
 
 #include "BTTask_GetBaseTrigger.h"
 
+#include "AIController.h"
 #include "TriggerBase/TriggerUtility.h"
 
 UBTTask_GetBaseTrigger::UBTTask_GetBaseTrigger(FObjectInitializer const& ObjectInitializer)
@@ -16,7 +17,21 @@ EBTNodeResult::Type UBTTask_GetBaseTrigger::ExecuteTask(UBehaviorTreeComponent& 
 
 	if (CurrentTrigger == nullptr)return EBTNodeResult::Failed;
 
-	CurrentTrigger->EnableTrigger();
+	AAIController* const Controller = Cast<AAIController>(OwnerComp.GetAIOwner());
+	if (!Controller)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return EBTNodeResult::Failed;
+	}
+
+	AActor* ControlledPawn = Controller->GetPawn();
+	if (!ControlledPawn)
+	{
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return EBTNodeResult::Failed;
+	}
+	
+	CurrentTrigger->EnableTrigger(ControlledPawn);
 
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	return EBTNodeResult::Succeeded;

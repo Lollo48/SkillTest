@@ -12,12 +12,13 @@ ANPCBaseController::ANPCBaseController(const FObjectInitializer& ObjectInitializ
 	:Super(ObjectInitializer.SetDefaultSubobjectClass<UEnemyCrowdFollowingComponent>(TEXT("PhatFollowingComponent")))
 {
 	ControlledPawn = nullptr;
+	bIsInitialized = false;
 }
 
 void ANPCBaseController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	
+	if (bIsInitialized)return;
 	if (ANPCBase* const EnemyBase = Cast<ANPCBase>(InPawn))
 	{
 		ControlledPawn = EnemyBase;
@@ -30,19 +31,25 @@ void ANPCBaseController::OnPossess(APawn* InPawn)
 			//LGDebug::Log("aic controller inizializzata",true);
 		}
 	}
+
+	InitializeEnemyBase();
+	
+}
+
+void ANPCBaseController::InitializeControllerAndBlackboard()
+{
+	InitializeController();
+	
+	CustomController();
+	
+	InitializeBlackboardValues();
+	
+	bIsInitialized = true;
 }
 
 void ANPCBaseController::BeginPlay()
 {
+	//LGDebug::Log("BEGIN PLAY", true);
 	Super::BeginPlay();
-	
-	GetWorld()->GetTimerManager().SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this, [this]()
-	{
-		InitializeController();
-		
-		InitializeBlackboardValues();
-
-		CustomController();
-		
-	}));
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this,&ANPCBaseController::InitializeControllerAndBlackboard);
 }
