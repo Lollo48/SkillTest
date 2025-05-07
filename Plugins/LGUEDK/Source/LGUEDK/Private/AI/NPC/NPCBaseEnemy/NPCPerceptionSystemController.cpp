@@ -30,23 +30,25 @@ ANPCPerceptionSystemController::ANPCPerceptionSystemController(const FObjectInit
 void ANPCPerceptionSystemController::SetStateAsPassive()
 {
 	bIsEnabled = false;
+	SetStateAsPassiveBP();
+	
+	if (!CanSee && !CanHear && !CanTakeDamage)return;
 	RemoveToPerceptionEvents();
 	AIPerceptionComponent->Deactivate();
 	AIPerceptionComponent->SetActive(false);
 	AIPerceptionComponent->SetComponentTickEnabled(false);
-	SetActorTickEnabled(false);
-	SetStateAsPassiveBP();
 }
 
 void ANPCPerceptionSystemController::SetStateAsPatrolling()
 {
 	bIsEnabled = true;
+	SetStateAsPatrollingBP();
+	
+	if (!CanSee && !CanHear && !CanTakeDamage)return;
 	RegisterToPerceptionEvents();
 	AIPerceptionComponent->Activate();
 	AIPerceptionComponent->SetActive(true);
 	AIPerceptionComponent->SetComponentTickEnabled(true);
-	SetActorTickEnabled(true);
-	SetStateAsPatrollingBP();
 }
 
 void ANPCPerceptionSystemController::BeginPlay()
@@ -57,6 +59,8 @@ void ANPCPerceptionSystemController::BeginPlay()
 void ANPCPerceptionSystemController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	
+	if (!CanSee && !CanHear && !CanTakeDamage)return;
 	SetUpPerceptionSystem();
 }
 

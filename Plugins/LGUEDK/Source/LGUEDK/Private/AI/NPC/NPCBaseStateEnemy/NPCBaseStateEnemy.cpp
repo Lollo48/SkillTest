@@ -82,6 +82,10 @@ void ANPCBaseStateEnemy::OnEntityDead(AActor* InSelf)
 	GetMesh()->SetSimulatePhysics(true);
 	
 	DisableEntityEffect();
+
+	ANPCBaseStateEnemyController* AIController = Cast<ANPCBaseStateEnemyController>(GetController());
+	if (!IsValid(AIController))return;
+	AIController->SetStateAsDead(InSelf);
 }
 
 UNPCBaseStateEnemyDataAsset* ANPCBaseStateEnemy::GetDataAsset() const

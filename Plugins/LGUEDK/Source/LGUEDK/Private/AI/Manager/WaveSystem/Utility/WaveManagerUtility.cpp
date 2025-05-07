@@ -19,11 +19,6 @@ void UWaveManagerUtility::InitWaveManager(UWaveManagerSubsystem* InWaveManagerSu
 
 }
 
-void UWaveManagerUtility::AddPointToSpawnPointManager(ASpawnPointBase* InSpawnPoint)
-{
-	
-}
-
 int32 UWaveManagerUtility::GetWaveIndex()
 {
 	return  WaveManagerSubsystem->GetWaveIndex();
@@ -92,6 +87,16 @@ void UWaveManagerUtility::BindToOnWaveClear(const FWaveClear& Context, bool bUni
 void UWaveManagerUtility::UnBindToOnWaveClear(const FWaveClear& Context)
 {
 	WaveManagerSubsystem->UnBindToOnWaveClear(Context);
+}
+
+void UWaveManagerUtility::BindToOnEndWave(const FEndWave& Context, bool bUnique)
+{
+	WaveManagerSubsystem->BindToOnEndWave(Context, bUnique);
+}
+
+void UWaveManagerUtility::UnBindToOnEndWave(const FEndWave& Context)
+{
+	WaveManagerSubsystem->UnBindToOnEndWave(Context);
 }
 
 void UWaveManagerUtility::BindToOnStartNewWave(const FstartNewWave& Context, bool bUnique)

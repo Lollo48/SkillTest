@@ -5,9 +5,6 @@
 #include "AI/NPC/NPCBase/NPCBase.h"
 #include "SpawnPointBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(
-	FSpawnPointClear);
-
 UCLASS()
 class LGUEDK_API ASpawnPointBase : public AActor
 {
@@ -16,33 +13,18 @@ class LGUEDK_API ASpawnPointBase : public AActor
 public:
 	
 	ASpawnPointBase();
-	
-	UPROPERTY(BlueprintAssignable)
-	FSpawnPointClear OnSpawnPointClear;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	virtual void BeginPlay() override;
-
-	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
-	void SetIsClear(const bool bClear) {bIsClear = bClear;}
-
-	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
-	bool GetIsClear() const {return bIsClear;}
 	
 	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
 	virtual void SpawnEnemy(TSubclassOf<ANPCBase> const& EnemyClass);
 	
 	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
 	int32 GetSpawnIndex() const {return Index;}
-
-	UFUNCTION(BlueprintCallable, Category = "Spawn")
-	void OnEnemyDead(AActor* InAttackTarget);
 	
 protected:
-	
-	UPROPERTY()
-	TArray<AActor*> SpawnedEnemies;
 
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	int32 Index;
@@ -60,9 +42,6 @@ private:
 	float DistanceBetweenEnemies = 100.0f;
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	bool bDrawDebug;
-	
-	UPROPERTY()
-	bool bIsClear;
 	
 	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
 	void DrawDebug();

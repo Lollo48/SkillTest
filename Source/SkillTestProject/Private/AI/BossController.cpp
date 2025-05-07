@@ -25,7 +25,7 @@ void ABossController::SetStateAsPassive()
 	Blackboard->SetValueAsEnum(TEXT("EnemyState"), uint8(EEnemyState::Passive));
 
 	if (!BossEntity)return;
-	BossEntity->OnEnemyPassive();
+	BossEntity->OnEntityPassive();
 }
 
 void ABossController::SetStateAsPatrolling()
@@ -37,7 +37,7 @@ void ABossController::SetStateAsPatrolling()
 	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 
 	if (!BossEntity)return;
-	BossEntity->OnEnemyPatrolling();
+	BossEntity->OnEntityPatrolling();
 }
 
 void ABossController::SetStateAsInvestigating()
@@ -49,7 +49,7 @@ void ABossController::SetStateAsInvestigating()
 	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 
 	if (!BossEntity)return;
-	BossEntity->OnEnemyInvestigating();
+	BossEntity->OnEntityInvestigating();
 }
 
 void ABossController::SetStateAsAttacking(AActor* InAttackTarget)
@@ -62,7 +62,7 @@ void ABossController::SetStateAsAttacking(AActor* InAttackTarget)
 	Blackboard->SetValueAsObject("AttackTarget",InAttackTarget);
 
 	if (!BossEntity)return;
-	BossEntity->OnEnemyAttack(InAttackTarget);
+	BossEntity->OnEntityAttack(InAttackTarget);
 }
 
 void ABossController::SetStateAsDead(AActor* InAttackTarget)
@@ -79,7 +79,7 @@ void ABossController::SetStateAsFlying()
 	Blackboard->SetValueAsBool("IsAlreadyDone",false);
 
 	if (!BossEntity)return;
-	BossEntity->OnEnemyFlying();
+	BossEntity->OnEntityFlying();
 }
 
 void ABossController::UpdateBBMovementActionState(EMovementActionState InMovementActionState)

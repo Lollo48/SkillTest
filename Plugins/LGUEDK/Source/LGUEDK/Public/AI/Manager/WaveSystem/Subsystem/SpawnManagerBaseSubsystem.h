@@ -34,11 +34,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FEntityDeadDispatcher OnEntityDead;
 
-	UFUNCTION(BlueprintCallable,Category = "SpawnManager")
-	int32 GetAliveEnemies() const { return AliveEnemies; }
-
 	UFUNCTION()
-	void SetAliveEnemies(int32 const InAliveEnemies) { AliveEnemies = InAliveEnemies; }
+	int32 GetAliveEnemies() const { return AliveEnemies; }
 
 	UFUNCTION()
 	virtual AActor* SpawnEntity(TSubclassOf<AActor> ActorToSpawn, FVector const SpawnLocation);

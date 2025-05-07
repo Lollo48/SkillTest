@@ -29,6 +29,8 @@ protected:
 private:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadOnly,category = WaveHelper, meta = (AllowPrivateAccess = "true"))
+	bool bWantsToStartWave;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,category = WaveHelper, meta = (AllowPrivateAccess = "true"))
 	bool bWantsToIncreaseWave;
 	UPROPERTY(EditAnywhere, category = WaveHelper)
 	FGameplayTag ArenaName;

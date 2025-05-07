@@ -11,7 +11,6 @@
 
 ASpawnPointBase::ASpawnPointBase()
 {
-	bIsClear = true;
 }
 
 
@@ -49,22 +48,22 @@ void ASpawnPointBase::SpawnEnemy(TSubclassOf<ANPCBase>const& EnemyClass)
 	
 	if (ANPCBase* SpawnedEnemy = GetWorld()->SpawnActor<ANPCBase>(EnemyClass, SpawnPoint, SpawnRotation,SpawnParams))
 	{
-		SpawnedEnemies.Add(SpawnedEnemy);
-
-		//LGDebug::Log("Nemico spawnato", true);
+		// SpawnedEnemies.Add(SpawnedEnemy);
+		//
+		// //LGDebug::Log("Nemico spawnato", true);
 		
 #if UE_EDITOR
 		const FString FolderName = TEXT("SpawnedEnemies/SpawnPoint");
 		SpawnedEnemy->SetFolderPath(*FolderName);
 #endif
 				
-		SetIsClear(false);
-
-		if (ANPCBaseStateEnemy* EnemyState = Cast<ANPCBaseStateEnemy>(SpawnedEnemy))
-		{
-			EnemyState->EnableEntityEffect();
-			EnemyState->OnStateDead.AddDynamic(this, &ASpawnPointBase::OnEnemyDead);
-		}
+		// SetIsClear(false);
+		//
+		// if (ANPCBaseStateEnemy* EnemyState = Cast<ANPCBaseStateEnemy>(SpawnedEnemy))
+		// {
+		// 	EnemyState->EnableEntityEffect();
+		// 	EnemyState->OnStateDead.AddDynamic(this, &ASpawnPointBase::OnEnemyDead);
+		// }
 	}
 	
 	//LGDebug::Log(FString::Printf(TEXT("%d"), SpawnedEnemies.Num()), true);
@@ -80,24 +79,6 @@ void ASpawnPointBase::GeneratePoints()
 	PossibleSpawnPoints = TArray<FVector>();
 	FVector SpawnLocation = GetActorLocation();
 	PossibleSpawnPoints = UEQSUtility::GenerateGridPoints(SpawnLocation,SpawnRadius,DistanceBetweenEnemies);
-}
-
-void ASpawnPointBase::OnEnemyDead(AActor* InAttackTarget)
-{
-	if (SpawnedEnemies.Contains(InAttackTarget))
-	{
-		SpawnedEnemies.Remove(InAttackTarget);
-	}
-	
-	//LGDebug::Log(FString::Printf(TEXT("%d"), SpawnedEnemies.Num()), true);
-	
-	if (SpawnedEnemies.Num() == 0)
-	{
-		//dico al manager che ho finito i miei nemici
-		SetIsClear(true);
-		OnSpawnPointClear.Broadcast();
-		//LGDebug::Log("SpawnPoint  is clear", true);
-	}
 }
 
 

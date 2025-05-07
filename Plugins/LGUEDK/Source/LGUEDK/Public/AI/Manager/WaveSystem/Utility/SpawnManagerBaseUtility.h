@@ -28,9 +28,6 @@ public:
 	static int32 GetAliveEnemies();
 
 	UFUNCTION(BlueprintCallable)
-	static void SetAliveEnemies(int32 const InAliveEnemies);
-
-	UFUNCTION(BlueprintCallable)
 	static AActor* SpawnEntity(TSubclassOf<AActor> ActorToSpawn, FVector const SpawnLocation);
 
 	UFUNCTION(BlueprintCallable)

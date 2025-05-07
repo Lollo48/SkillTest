@@ -12,14 +12,14 @@ ADragonBoss::ADragonBoss()
 {
 }
 
-void ADragonBoss::OnEnemyPassive()
+void ADragonBoss::OnEntityPassive()
 {
-	Super::OnEnemyPassive();
+	Super::OnEntityPassive();
 }
 
-void ADragonBoss::OnEnemyPatrolling()
+void ADragonBoss::OnEntityPatrolling()
 {
-	Super::OnEnemyPatrolling();
+	Super::OnEntityPatrolling();
 	SetMovementActionState(EMovementActionState::Walking);
 	if (MySpline->GetSplineMode()==ESplineMode::SplineModeB)
 	{
@@ -27,16 +27,16 @@ void ADragonBoss::OnEnemyPatrolling()
 	}
 }
 
-void ADragonBoss::OnEnemyInvestigating()
+void ADragonBoss::OnEntityInvestigating()
 {
-	Super::OnEnemyInvestigating();
+	Super::OnEntityInvestigating();
 	ReachEndSplinePoint();
 	Timer = 100.0f;
 }
 
-void ADragonBoss::OnEnemyAttack(AActor* InAttackTarget)
+void ADragonBoss::OnEntityAttack(AActor* InAttackTarget)
 {
-	Super::OnEnemyAttack(InAttackTarget);
+	Super::OnEntityAttack(InAttackTarget);
 	
 	if (MySpline->GetSplineMode()==ESplineMode::SplineModeB)
 	{
@@ -44,22 +44,15 @@ void ADragonBoss::OnEnemyAttack(AActor* InAttackTarget)
 	}
 }
 
-void ADragonBoss::OnEnemyDead(AActor* InAttackTarget)
+void ADragonBoss::OnEntityDead(AActor* InAttackTarget)
 {
-	Super::OnEnemyDead(InAttackTarget);
+	Super::OnEntityDead(InAttackTarget);
 	
-	ABossController* AIController = Cast<ABossController>(GetController());
-	if (!AIController)
-	{
-		return;
-	};
-	
-	AIController->SetStateAsDead(InAttackTarget);
 }
 
-void ADragonBoss::OnEnemyFlying()
+void ADragonBoss::OnEntityFlying()
 {
-	SetEnemyState(EEnemyState::Flying);
+	SetEntityState(EEnemyState::Flying);
 }
 
 void ADragonBoss::ReachStartSplinePoint()
@@ -110,7 +103,7 @@ void ADragonBoss::ReachSplinePoint()
 
 UAttackDataAsset* ADragonBoss::GetAttackDataAsset()
 {
-	float Distance = FVector::Dist(GetActorLocation(), GetAttackTarget()->GetActorLocation());
+	float Distance = FVector::Dist(GetActorLocation(), GetTarget()->GetActorLocation());
 
 	UAttackDataAsset* BestAttack = nullptr;
 	int32 HighestPriority = -1;

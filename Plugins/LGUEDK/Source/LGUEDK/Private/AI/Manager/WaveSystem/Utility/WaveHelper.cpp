@@ -16,21 +16,24 @@ AWaveHelper::AWaveHelper()
 void AWaveHelper::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	GetWorld()->GetTimerManager().SetTimer(
+	UWaveManagerUtility::SetCurrentWavesByTag(ArenaName);
+
+	if (bWantsToStartWave)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
 		TimerHandle,
 		this,
 		&AWaveHelper::InitWaveSystem,
 		1.0f, 
 		false 
 	);
+	}
+	
 }
 
 void AWaveHelper::InitWaveSystem()
 {
-	UWaveManagerUtility::SetCurrentWavesByTag(ArenaName);
 	UWaveManagerUtility::TryStartWave();
-	
 	TimerHandle.Invalidate();
 	InitWaveSystemBP();
 }

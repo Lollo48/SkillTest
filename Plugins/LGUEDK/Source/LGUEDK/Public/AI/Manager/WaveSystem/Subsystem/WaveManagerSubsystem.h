@@ -14,8 +14,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(
 	FWaveClearDispatcher);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
-	FStartNewWaveDispatcher, float, Time);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+	FStartNewWaveDispatcher, float, Time,int , WaveIndex);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEndWaveDispatcher,int , WaveIndex);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FAllEntitySpawnedDispatcher, int, CountEnemy);
@@ -27,11 +29,13 @@ DECLARE_DYNAMIC_DELEGATE(FAllWaveClear);
 
 DECLARE_DYNAMIC_DELEGATE(FWaveClear);
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FstartNewWave, float, Time);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FstartNewWave, float, Time,int , WaveIndex);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FAllEntitySpawned, int, CountEnemy);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FLastEntityDead, AActor*, DeadActor);
+
+DECLARE_DYNAMIC_DELEGATE_OneParam(FEndWave,int , WaveIndex);
 
 
 /**
@@ -52,6 +56,9 @@ public:
  
 	UPROPERTY(BlueprintAssignable)
 	FStartNewWaveDispatcher OnStartNewWave;
+
+	UPROPERTY(BlueprintAssignable)
+	FEndWaveDispatcher OnEndWave;
 
 	UPROPERTY(BlueprintAssignable)
 	FAllEntitySpawnedDispatcher OnAllEntitySpawned;
@@ -101,6 +108,12 @@ public:
 	
 	UFUNCTION(Category = "Wave Manager")
 	void UnBindToOnStartNewWave(const FstartNewWave& Context);
+
+	UFUNCTION(Category = "Wave Manager")
+	void BindToOnEndWave(const FEndWave& Context,bool bUnique = true);
+
+	UFUNCTION(Category = "Wave Manager")
+	void UnBindToOnEndWave(const FEndWave& Context);
 	
 	UFUNCTION(Category = "Wave Manager")
 	void BindToOnAllEntitySpawned(const FAllEntitySpawned& Context,bool bUnique = true);
@@ -147,8 +160,5 @@ private:
 	
 	UFUNCTION()
 	virtual void SpawnWave();
-
-	UFUNCTION()
-	void OnSpawnPointClear();
 	
 };

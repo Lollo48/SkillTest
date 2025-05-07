@@ -49,7 +49,7 @@ protected:
 
 	virtual void OnPossess(APawn* InPawn) override { Super::OnPossess(InPawn); };
 
-	virtual void InitializeEnemyBase() override {Super::InitializeEnemyBase();} 
+	virtual void InitializeEnemyBase() override;
 	
 	virtual void InitializeBlackboardValues() override { Super::InitializeBlackboardValues(); };
 
@@ -75,7 +75,11 @@ protected:
 	void SetStateAsDeadBP(AActor* InAttackTarget);
 
 private:
+	
 	UPROPERTY()
 	EEnemyState CurrentState;
+	
+	UPROPERTY()
+	ANPCBaseStateEnemy* Entity;
 	
 };

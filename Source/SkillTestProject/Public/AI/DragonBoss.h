@@ -22,13 +22,13 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FStartAttack OnAttackStart;
-
-	virtual void OnEnemyPassive() override;
-	virtual void OnEnemyPatrolling() override;
-	virtual void OnEnemyInvestigating() override;
-	virtual void OnEnemyAttack(AActor* InAttackTarget) override;
-	virtual void OnEnemyDead(AActor* InAttackTarget) override;
-	void OnEnemyFlying();
+	
+	virtual void OnEntityPassive() override;
+	virtual void OnEntityPatrolling() override;
+	virtual void OnEntityInvestigating() override;
+	virtual void OnEntityAttack(AActor* InAttackTarget) override;
+	virtual void OnEntityDead(AActor* InAttackTarget) override;
+	void OnEntityFlying();
 	
 	UFUNCTION(BlueprintCallable,Category = "Spline")
 	void ReachStartSplinePoint();

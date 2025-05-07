@@ -34,7 +34,6 @@ void ANPCBaseEnemy::OnEntityPatrolling()
 
 void ANPCBaseEnemy::SetMovementSpeed(const EMovementSpeed MovementSpeed) const
 {
-
 	UCharacterMovementComponent* MyCharacterMovement = GetCharacterMovement();
 	if (!MyCharacterMovement)
 	{

@@ -39,7 +39,7 @@ protected:
 	void InitializeControllerAndBlackboard();
 
 	UFUNCTION()
-	virtual void InitializeBlackboardValues() {};
+	virtual void InitializeBlackboardValues() {	if (!Blackboard)return;};
 
 	UFUNCTION()
 	virtual void InitializeEnemyBase(){};

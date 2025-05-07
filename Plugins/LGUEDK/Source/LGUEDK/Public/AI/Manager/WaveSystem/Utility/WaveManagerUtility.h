@@ -22,8 +22,6 @@ public:
 	
 	static void InitWaveManager(UWaveManagerSubsystem* InWaveManagerSubsystem);
 
-	static void AddPointToSpawnPointManager(ASpawnPointBase* InSpawnPoint);
-
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static int32 GetWaveIndex();
 
@@ -64,6 +62,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable,  Category = "Wave Manager")
 	static void UnBindToOnWaveClear(const FWaveClear& Context);
+
+	UFUNCTION(BlueprintCallable,  Category = "Wave Manager")
+	static void BindToOnEndWave(const FEndWave& Context,bool bUnique = true);
+
+	UFUNCTION(BlueprintCallable,  Category = "Wave Manager")
+	static void UnBindToOnEndWave(const FEndWave& Context);
 	
 	UFUNCTION(BlueprintCallable,  Category = "Wave Manager")
 	static void BindToOnStartNewWave(const FstartNewWave& Context,bool bUnique = true);

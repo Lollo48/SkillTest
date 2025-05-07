@@ -31,22 +31,22 @@ private:
 	UPROPERTY()
 	APawn* ControlledPawn;
 	
-	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "bWantExplore"))
+	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "bCanExplore"))
 	FBlackboardKeySelector InitialPositionKey;
 
-	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "EFlyingMode == EFlyingMode::Random"))
+	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "FlyingMode == EFlyingMode::Random"))
 	FBlackboardKeySelector SearchRadiusKey;
 	
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 	FBlackboardKeySelector TargetLocationKey;
 
-	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "EFlyingMode == EFlyingMode::AroundActor"))
+	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "FlyingMode == EFlyingMode::AroundActor"))
 	FBlackboardKeySelector AroundActorKey;
 
-	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "EFlyingMode == EFlyingMode::AroundActor"))
+	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "FlyingMode == EFlyingMode::AroundActor"))
 	FBlackboardKeySelector MaxDistanceFromActorKey;
 
-	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "EFlyingMode == EFlyingMode::AroundActor"))
+	UPROPERTY(EditAnywhere, Category = "Blackboard",meta = (EditCondition = "FlyingMode == EFlyingMode::AroundActor"))
 	FBlackboardKeySelector MinDistanceFromActorKey;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Flying|Settings", meta=(AllowPrivateAccess = "true"))
@@ -61,10 +61,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Flying|General")
 	float MaxAltitudeFromGround = 800.f;
 
-	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::Circular"))
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "FlyingMode == EFlyingMode::Circular"))
 	float FlyingCircleRadius = 300.f; 
 
-	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::Circular"))
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "FlyingMode == EFlyingMode::Circular"))
 	float CircleAngleStep = 30.f; 
 	
 	UPROPERTY(EditAnywhere, Category = "Flying|General")
@@ -88,13 +88,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Flying|General")
 	float VerticalBias = 0.0f; // -1 = in basso, 1 = in alto
 
-	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "FlyingMode == EFlyingMode::Random"))
 	float MinRotationYaw = -150.f;
-	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "FlyingMode == EFlyingMode::Random"))
 	float MaxRotationYaw = 150.f;
-	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "FlyingMode == EFlyingMode::Random"))
 	float MinRotationPitch = -100.f;
-	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "EFlyingMode == EFlyingMode::random"))
+	UPROPERTY(EditAnywhere, Category = "Flying|General",meta = (EditCondition = "FlyingMode == EFlyingMode::Random"))
 	float MaxRotationPitch = 100.f;
 	
 	bool bCanExplore;

@@ -23,7 +23,6 @@ void UWaveManagerSubsystem::InitSpawnPoint(ASpawnPointBase* InSpawnPoint)
 	if (!PossibleSpawnPoints.Contains(SpawnPointIndex))
 	{
 		PossibleSpawnPoints.Add(SpawnPointIndex, InSpawnPoint);
-		InSpawnPoint->OnSpawnPointClear.AddDynamic(this, &UWaveManagerSubsystem::OnSpawnPointClear);
 	}
 	else
 	{
@@ -42,7 +41,7 @@ void UWaveManagerSubsystem::SetCurrentWavesByTag(FGameplayTag InWaveTag)
 
 void UWaveManagerSubsystem::StartWave()
 {
-	OnStartNewWave.Broadcast(CurrentWave->TimeBeforeNextWave);
+	OnStartNewWave.Broadcast(CurrentWave->TimeBeforeNextWave, CurrentWaveIndex);
 	
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UWaveManagerSubsystem::SpawnWave, CurrentWave->TimeBeforeNextWave, false);
 }
@@ -115,7 +114,7 @@ void UWaveManagerSubsystem::TryStartWave()
 	else
 	{
 		OnAllWaveClear.Broadcast();
-		LGDebug::Log("WAVE FINITE COMPLIMENTI",true);
+		//LGDebug::Log("WAVE FINITE COMPLIMENTI",true);
 	}
 }
 
@@ -125,6 +124,9 @@ void UWaveManagerSubsystem::EntityDead(AActor* InEntityDead)
 	
 	if (AliveEnemies <= 0)
 	{
+		OnEndWave.Broadcast(CurrentWaveIndex);
+		AliveEnemies = 0;
+		OnWaveClear.Broadcast();
 		OnLastEntityDead.Broadcast(InEntityDead);
 		//LGDebug::Log("Ultimo nemico",true);
 	}
@@ -176,6 +178,22 @@ void UWaveManagerSubsystem::BindToOnStartNewWave(const FstartNewWave& Context, b
 void UWaveManagerSubsystem::UnBindToOnStartNewWave(const FstartNewWave& Context)
 {
 	OnStartNewWave.Remove(Context);
+}
+
+void UWaveManagerSubsystem::BindToOnEndWave(const FEndWave& Context, bool bUnique)
+{
+	if (bUnique)
+	{
+		OnEndWave.AddUnique(Context);
+		return;
+	}
+
+	OnEndWave.Add(Context);
+}
+
+void UWaveManagerSubsystem::UnBindToOnEndWave(const FEndWave& Context)
+{
+	OnEndWave.Remove(Context);
 }
 
 void UWaveManagerSubsystem::BindToOnAllEntitySpawned(const FAllEntitySpawned& Context, bool bUnique)
@@ -237,17 +255,3 @@ void UWaveManagerSubsystem::Init()
 	InitBP();
 }
 
-void UWaveManagerSubsystem::OnSpawnPointClear()
-{
-	for (int i = 0; i < PossibleSpawnPoints.Num(); i++)
-	{
-		if (!PossibleSpawnPoints[i]->GetIsClear()) 
-		{
-			return;
-		}
-	}
-	
-	OnWaveClear.Broadcast();
-	
-	//LGDebug::Log("All SpawnPoint Clear", true);
-}

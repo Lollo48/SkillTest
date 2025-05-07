@@ -23,11 +23,6 @@ int32 USpawnManagerBaseUtility::GetAliveEnemies()
 	return SpawnManagerSubsystem->GetAliveEnemies();
 }
 
-void USpawnManagerBaseUtility::SetAliveEnemies(int32 const InAliveEnemies)
-{
-	SpawnManagerSubsystem->SetAliveEnemies(InAliveEnemies);
-}
-
 AActor* USpawnManagerBaseUtility::SpawnEntity(TSubclassOf<AActor> ActorToSpawn, FVector const SpawnLocation)
 {
 	return SpawnManagerSubsystem->SpawnEntity(ActorToSpawn, SpawnLocation);
