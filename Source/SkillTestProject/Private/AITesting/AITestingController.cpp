@@ -10,9 +10,7 @@
 AAITestingController::AAITestingController()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	CanSee = false;
-	CanHear = false;
-	CanTakeDamage = false;
+	
 }
 
 void AAITestingController::BeginPlay()
@@ -35,9 +33,9 @@ void AAITestingController::InitializeBlackboardValues()
 	Blackboard->SetValueAsFloat("SearchRadius", DataAsset->SearchRadius);
 }
 
-void AAITestingController::InitializeEnemyBase()
+void AAITestingController::InitializeControlledEntity()
 {
-	Super::InitializeEnemyBase();
+	Super::InitializeControlledEntity();
 	AITesting = Cast<AAITesting>(GetPawn());
 }
 

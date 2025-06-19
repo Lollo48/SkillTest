@@ -33,6 +33,9 @@ public:
 	virtual void SetStateAsPatrolling();
 
 protected:
+
+	UPROPERTY(EditAnywhere,Category = "PerceptionSystemControllerData")
+	UPerceptionSystemControllerData* PerceptionSystemControllerData;
 	
 	FTimerHandle LostSightTimerHandle;
 	
@@ -99,8 +102,7 @@ private:
 	UPROPERTY()
 	ANPCBaseEnemy* BaseControlledEntity;
 
-	UPROPERTY(EditAnywhere,Category = "PerceptionSystemControllerData")
-	UPerceptionSystemControllerData* PerceptionSystemControllerData;
+	
 	
 };
 

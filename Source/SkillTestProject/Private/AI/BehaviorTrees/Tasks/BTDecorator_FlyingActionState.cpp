@@ -3,6 +3,7 @@
 
 #include "BTDecorator_FlyingActionState.h"
 
+#include "AIController.h"
 #include "AI/DragonBoss.h"
 
 UBTDecorator_FlyingActionState::UBTDecorator_FlyingActionState(FObjectInitializer const& ObjectInitializer)

@@ -19,7 +19,7 @@ protected:
 	
 	virtual void BeginPlay() override;
 	virtual void InitializeBlackboardValues() override;
-	virtual void InitializeEnemyBase() override;
+	virtual void InitializeControlledEntity() override;
 
 public:
 	// Called every frame

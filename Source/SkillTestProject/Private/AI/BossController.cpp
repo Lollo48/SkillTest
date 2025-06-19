@@ -10,10 +10,6 @@
 // Sets default values
 ABossController::ABossController()
 {
-	CanHear = false;
-	CanSee = true;
-	CanTakeDamage = false;
-	SetUpPerceptionSystem();
 	BossEntity = nullptr;
 }
 
@@ -136,7 +132,7 @@ void ABossController::InitializeBlackboardValues()
 void ABossController::InitializeController()
 {
 	Super::InitializeController();
-	BossEntity = Cast<ADragonBoss>(GetControlledPawn());
+	BossEntity = Cast<ADragonBoss>(GetControlledEntity());
 }
 
 void ABossController::HandleSight(AActor* Actor, FAIStimulus Stimulus)
@@ -156,20 +152,20 @@ void ABossController::HandleSight(AActor* Actor, FAIStimulus Stimulus)
 			//LGDebug::Log("TIMER PERSO ANNULLATO", true);
 		}
 		
-		if (BossEntity->GetState() == EEnemyState::Patrolling || BossEntity->GetState() == EEnemyState::Passive)
+		if (BossEntity->GetEntityState() == EEnemyState::Patrolling || BossEntity->GetEntityState() == EEnemyState::Passive)
 		{
 			SetStateAsAttacking(Actor);
 		}
 	}
 	else
 	{
-		if (BossEntity->GetState() == EEnemyState::Chasing || BossEntity->GetState() == EEnemyState::Attacking)
+		if (BossEntity->GetEntityState() == EEnemyState::Chasing || BossEntity->GetEntityState() == EEnemyState::Attacking)
 		{
 			GetWorld()->GetTimerManager().SetTimer(
 				LostSightTimerHandle,
 				this,
 				&ABossController::OnLostSight,
-				SightMaxAge,
+				PerceptionSystemControllerData->SightMaxAge,
 				false
 			);
 			//LGDebug::Log("LOST SIGHT PLAYER", true);
