@@ -15,10 +15,20 @@ ANPCBaseController::ANPCBaseController(const FObjectInitializer& ObjectInitializ
 	bIsInitialized = false;
 }
 
+ANPCBase* ANPCBaseController::GetControlledEntity() const
+{
+	if (!IsValid(ControlledPawn))
+	{
+		UE_LOG(LogTemp, Error, TEXT("No controlled pawn"));
+		return nullptr;
+	}
+	return ControlledPawn;
+}
+
 void ANPCBaseController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	if (bIsInitialized)return;
+	if (GetIsInitialize())return;
 	if (ANPCBase* const EnemyBase = Cast<ANPCBase>(InPawn))
 	{
 		ControlledPawn = EnemyBase;
@@ -31,9 +41,7 @@ void ANPCBaseController::OnPossess(APawn* InPawn)
 			//LGDebug::Log("aic controller inizializzata",true);
 		}
 	}
-
-	InitializeEnemyBase();
-	
+	InitializeControlledEntity();
 }
 
 void ANPCBaseController::InitializeControllerAndBlackboard()
@@ -44,7 +52,7 @@ void ANPCBaseController::InitializeControllerAndBlackboard()
 	
 	InitializeBlackboardValues();
 	
-	bIsInitialized = true;
+	SetIsInitialize(true);
 }
 
 void ANPCBaseController::BeginPlay()

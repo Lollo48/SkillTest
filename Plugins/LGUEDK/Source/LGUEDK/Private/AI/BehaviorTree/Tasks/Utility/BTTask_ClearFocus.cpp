@@ -25,7 +25,7 @@ EBTNodeResult::Type UBTTask_ClearFocus::ExecuteTask(UBehaviorTreeComponent& Owne
 	Character->GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	
 	AIController->ClearFocus(EAIFocusPriority::Gameplay);
-	UE_LOG(LogTemp, Log, TEXT("ClearEnemyFocusTask: Focus cleared"));
+	//UE_LOG(LogTemp, Log, TEXT("ClearEnemyFocusTask: Focus cleared"));
 
 	FinishLatentTask(OwnerComp,EBTNodeResult::Succeeded);
 	return EBTNodeResult::Succeeded;

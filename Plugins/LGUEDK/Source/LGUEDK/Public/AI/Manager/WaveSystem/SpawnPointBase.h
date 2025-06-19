@@ -5,6 +5,7 @@
 #include "AI/NPC/NPCBase/NPCBase.h"
 #include "SpawnPointBase.generated.h"
 
+
 UCLASS()
 class LGUEDK_API ASpawnPointBase : public AActor
 {
@@ -19,7 +20,7 @@ public:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
-	virtual void SpawnEnemy(TSubclassOf<ANPCBase> const& EnemyClass);
+	virtual void SpawnEnemy(TSubclassOf<AActor> const& EnemyClass);
 	
 	UFUNCTION(Blueprintable,BlueprintCallable, Category = "Spawn")
 	int32 GetSpawnIndex() const {return Index;}
@@ -38,8 +39,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	float SpawnRadius;
-	UPROPERTY(EditAnywhere, Category = "Spawn")
-	float DistanceBetweenEnemies = 100.0f;
 	UPROPERTY(EditAnywhere, Category = "Spawn")
 	bool bDrawDebug;
 	

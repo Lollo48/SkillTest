@@ -2,9 +2,10 @@
 
 
 #include "BTTask_FindRandomLocation.h"
-#include "NavigationSystem.h"
+
+#include "AI/EQS/EQSUtility.h"
+#include "AI/NPC/NPCBase/NPCBaseController.h"
 #include "AI/NPC/NPCBaseStateEnemy/NPCBaseStateEnemy.h"
-#include "LGUEDK/Public/AI/NPC/NPCBase/NPCBaseController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_FindRandomLocation::UBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer)
@@ -14,41 +15,20 @@ UBTTask_FindRandomLocation::UBTTask_FindRandomLocation(FObjectInitializer const&
 
 EBTNodeResult::Type UBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-    ANPCBaseController* const Controller = Cast<ANPCBaseController>(OwnerComp.GetAIOwner());
-    if (!Controller){return EBTNodeResult::Failed;}
-    APawn* const Enemy = Controller->GetPawn();
-    if (!Enemy){return EBTNodeResult::Failed;}
+	ANPCBaseController* const Controller = Cast<ANPCBaseController>(OwnerComp.GetAIOwner());
+	if (!Controller){return EBTNodeResult::Failed;}
+	
+	ANPCBaseStateEnemy* Enemy = Cast<ANPCBaseStateEnemy>(Controller->GetPawn());
 
-    bWantExplore = Cast<ANPCBaseStateEnemy>(Enemy)->GetDataAsset()->bWantExplore;
-    FVector InitialSpawnPosition = OwnerComp.GetBlackboardComponent()->GetValueAsVector(InitialPositionKey.SelectedKeyName);
-    FVector InitialPosition = Enemy->GetActorLocation();
-    float SearchRadius = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(SearchRadiusKey.SelectedKeyName);
-
-    UNavigationSystemV1* const NavigationSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-    if (!NavigationSystem){return EBTNodeResult::Failed;}
-
-    FNavLocation Result;
-    FVector BestLocation = InitialSpawnPosition;
-
-    if (!bWantExplore)
-    {
-        if (NavigationSystem->GetRandomReachablePointInRadius(InitialSpawnPosition, SearchRadius, Result))
-        {
-            BestLocation = Result.Location;
-        }
-    }
-    else
-    {
-        if (NavigationSystem->GetRandomReachablePointInRadius(InitialPosition, SearchRadius, Result))
-        {
-            BestLocation = Result.Location;
-        }
-    }
+	bWantExplore = Cast<ANPCBaseStateEnemy>(Enemy)->GetDataAsset()->bWantExplore;
+	FVector InitialSpawnPosition = OwnerComp.GetBlackboardComponent()->GetValueAsVector(InitialPositionKey.SelectedKeyName);
+	FVector InitialPosition = Enemy->GetActorLocation();
+	float SearchRadius = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(SearchRadiusKey.SelectedKeyName);
+	
+	FVector BestLocation = UEQSUtility::GetRandomExplorationPoint(Enemy,nullptr,InitialSpawnPosition, InitialPosition, SearchRadius, bWantExplore);
     
-    OwnerComp.GetBlackboardComponent()->SetValueAsVector("TargetLocation", BestLocation);
+	OwnerComp.GetBlackboardComponent()->SetValueAsVector("TargetLocation", BestLocation);
                 
-    FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-    return EBTNodeResult::Succeeded;
+	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+	return EBTNodeResult::Succeeded;
 }
-
-

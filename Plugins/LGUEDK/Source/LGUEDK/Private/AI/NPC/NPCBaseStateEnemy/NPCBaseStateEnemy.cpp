@@ -82,10 +82,9 @@ void ANPCBaseStateEnemy::OnEntityDead(AActor* InSelf)
 	GetMesh()->SetSimulatePhysics(true);
 	
 	DisableEntityEffect();
-
-	ANPCBaseStateEnemyController* AIController = Cast<ANPCBaseStateEnemyController>(GetController());
-	if (!IsValid(AIController))return;
-	AIController->SetStateAsDead(InSelf);
+	
+	if (!IsValid(BaseStateEnemyController))return;
+	BaseStateEnemyController->SetStateAsDead(InSelf);
 }
 
 UNPCBaseStateEnemyDataAsset* ANPCBaseStateEnemy::GetDataAsset() const
@@ -95,19 +94,31 @@ UNPCBaseStateEnemyDataAsset* ANPCBaseStateEnemy::GetDataAsset() const
 		UE_LOG(LogTemp, Warning, TEXT("NPCEnemyStateDataAsset is nullptr in %s"), *GetName());
 		return nullptr;
 	}
-
+	
 	return NPCEnemyStateDataAsset;
+}
+
+ANPCBaseStateEnemyController* ANPCBaseStateEnemy::GetBaseStateEntityController() const
+{
+	if (!IsValid(BaseStateEnemyController))
+	{
+		UE_LOG(LogTemp, Error, TEXT("No controller"));
+		return nullptr;
+	}
+	return BaseStateEnemyController;
 }
 
 void ANPCBaseStateEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	NPCEnemyStateDataAsset = Cast<UNPCBaseStateEnemyDataAsset>(NPCDataAsset);
+	
 }
 
 void ANPCBaseStateEnemy::Init()
 {
 	Super::Init();
+	BaseStateEnemyController = Cast<ANPCBaseStateEnemyController>(GetEntityController());
+	NPCEnemyStateDataAsset = Cast<UNPCBaseStateEnemyDataAsset>(AIData);
 }
 
 

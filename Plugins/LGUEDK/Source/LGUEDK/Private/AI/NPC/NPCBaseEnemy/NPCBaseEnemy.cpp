@@ -2,7 +2,6 @@
 
 #include "LGUEDK/Public/AI/NPC/NPCBaseEnemy/NPCBaseEnemy.h"
 #include "AI/Enumerators/EMovementSpeed.h"
-#include "AI/NPC/NPCBase/NPCBaseController.h"
 #include "AI/NPC/NPCBaseEnemy/NPCPerceptionSystemController.h"
 #include "AI/NPC/NPCBaseStateEnemy/NPCBaseStateEnemyController.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -15,6 +14,16 @@ ANPCBaseEnemy::ANPCBaseEnemy()
 	
 }
 
+ANPCPerceptionSystemController* ANPCBaseEnemy::GetPerceptionSystemController() const
+{
+	if (!IsValid(PerceptionSystemController))
+	{
+		UE_LOG(LogTemp, Error, TEXT("No controller"));
+		return nullptr;
+	}
+	return PerceptionSystemController;
+}
+
 void ANPCBaseEnemy::OnEntityPassive()
 {
 	SetEntityState(EEnemyState::Passive);
@@ -24,9 +33,7 @@ void ANPCBaseEnemy::OnEntityPassive()
 
 void ANPCBaseEnemy::OnEntityPatrolling()
 {
-	if (!GetIsEnable())return;
-	if (!GetIsInitialize())return;
-	
+	//LGDebug::Log("BaseEnemyPatrolling",true);
 	SetEntityState(EEnemyState::Patrolling);
 	OnStatePatrolling.Broadcast();
 	OnEntityPatrollingBP();
@@ -34,6 +41,7 @@ void ANPCBaseEnemy::OnEntityPatrolling()
 
 void ANPCBaseEnemy::SetMovementSpeed(const EMovementSpeed MovementSpeed) const
 {
+
 	UCharacterMovementComponent* MyCharacterMovement = GetCharacterMovement();
 	if (!MyCharacterMovement)
 	{
@@ -44,19 +52,19 @@ void ANPCBaseEnemy::SetMovementSpeed(const EMovementSpeed MovementSpeed) const
 	switch (MovementSpeed)
 	{
 	case EMovementSpeed::Idle:
-		MyCharacterMovement->MaxWalkSpeed = NPCDataAsset->IdleSpeed; 
+		MyCharacterMovement->MaxWalkSpeed = AIData->IdleSpeed; 
 		break;
 
 	case EMovementSpeed::Walk:
-		MyCharacterMovement->MaxWalkSpeed = NPCDataAsset->WalkSpeed; 
+		MyCharacterMovement->MaxWalkSpeed = AIData->WalkSpeed; 
 		break;
 
 	case EMovementSpeed::Run:
-		MyCharacterMovement->MaxWalkSpeed = NPCDataAsset->RunSpeed; 
+		MyCharacterMovement->MaxWalkSpeed = AIData->RunSpeed; 
 		break;
 
 	case EMovementSpeed::Sprint:
-		MyCharacterMovement->MaxWalkSpeed = NPCDataAsset->SprintSpeed; 
+		MyCharacterMovement->MaxWalkSpeed = AIData->SprintSpeed; 
 		break;
 
 	default:
@@ -76,6 +84,7 @@ void ANPCBaseEnemy::BeginPlay()
 void ANPCBaseEnemy::Init()
 {
 	Super::Init();
+	PerceptionSystemController = Cast<ANPCPerceptionSystemController>(GetEntityController());
 }
 
 

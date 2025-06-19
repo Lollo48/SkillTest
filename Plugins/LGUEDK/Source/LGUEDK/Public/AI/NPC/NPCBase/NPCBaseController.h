@@ -7,8 +7,6 @@
 #include "Runtime/AIModule/Classes/AIController.h"
 #include "NPCBaseController.generated.h"
 
-class ANPCBase;
-
 UCLASS()
 class LGUEDK_API ANPCBaseController : public AAIController
 {
@@ -18,19 +16,16 @@ public:
 	
 	explicit ANPCBaseController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(Blueprintable,BlueprintCallable)
-	ANPCBase* GetControlledPawn() const {return ControlledPawn;}
+	UFUNCTION(Blueprintable,BlueprintCallable,blueprintPure)
+	ANPCBase* GetControlledEntity() const;
+	
+	UFUNCTION(Blueprintable,BlueprintCallable,blueprintPure)
+	bool GetIsEnable() const {return bIsEnabled;}
+	
+	UFUNCTION(Blueprintable,BlueprintCallable,blueprintPure)
+	bool GetIsInitialize() const {return bIsInitialized;}
 	
 protected:
-
-	UPROPERTY()
-	ANPCBase* ControlledPawn;
-
-	UPROPERTY()
-	bool bIsInitialized;
-
-	UPROPERTY()
-	bool bIsEnabled = false;
 	
 	UFUNCTION()
 	virtual void OnPossess(APawn* InPawn) override;
@@ -40,9 +35,9 @@ protected:
 
 	UFUNCTION()
 	virtual void InitializeBlackboardValues() {	if (!Blackboard)return;};
-
+	
 	UFUNCTION()
-	virtual void InitializeEnemyBase(){};
+	virtual void InitializeControlledEntity(){};
 
 	UFUNCTION()
 	virtual void CustomController() {};
@@ -50,6 +45,23 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void InitializeController(){}
+	
+	UFUNCTION(Blueprintable,BlueprintCallable)
+	void SetIsInitialize(bool bInit) const {bInit = bIsInitialized;}
+	
+	UFUNCTION(Blueprintable,BlueprintCallable)
+	void SetIsEnable(bool bEnable) const {bEnable = bIsEnabled;}
+
+private:
+	
+	UPROPERTY()
+	ANPCBase* ControlledPawn;
+
+	UPROPERTY()
+	bool bIsInitialized;
+
+	UPROPERTY()
+	bool bIsEnabled = false;
 	
 };
 

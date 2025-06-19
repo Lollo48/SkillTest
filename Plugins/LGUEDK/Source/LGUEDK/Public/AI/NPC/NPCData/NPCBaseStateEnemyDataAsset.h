@@ -69,6 +69,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Attack Ranges",meta =( EditCondition = "bCanStateAttacking",EditConditionHides))
 	float MaxAttackRadius = 1000.f;
 
+	/**
+	* * Attack Weight is used to determine the priority of the activation while pending
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Attack Ranges",meta =( EditCondition = "bCanStateAttacking",EditConditionHides))
+	int AttackWeight = 0;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AI|Pending",meta =( EditCondition = "bCanStatePending",EditConditionHides))
 	float MinPendingRadius = 1000.f;
 	

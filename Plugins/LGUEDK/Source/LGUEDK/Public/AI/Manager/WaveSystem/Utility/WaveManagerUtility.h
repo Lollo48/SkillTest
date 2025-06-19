@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AI/Manager/WaveSystem/SpawnPointBase.h"
-#include "AI/Manager/WaveSystem/Subsystem/WaveManagerSubsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "AI/Manager/WaveSystem/Subsystem/WaveManagerSubsystem.h"
 #include "WaveManagerUtility.generated.h"
 
 /**
@@ -25,6 +25,9 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static int32 GetWaveIndex();
 
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	static int32 GetTotalWaveIndex();
+
 	UFUNCTION(BlueprintCallable)
 	static void IncreaseCurrentWaveIndex(int32 Increase);
 
@@ -36,8 +39,12 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	static void TryStartWave();
-	
+
+	UFUNCTION(BlueprintCallable)
 	static void EntityDead(AActor* InEntityDead);
+
+	UFUNCTION(BlueprintCallable)
+	static void ResetWave(int32 InWaveIndex,bool bWantsStartNewWave);
 	
 	UFUNCTION(BlueprintCallable,  Category = "Wave Manager")
 	static void BindToOnSpawnEntity(const FSpawnEntity& Context,bool bUnique = true);
@@ -82,8 +89,14 @@ public:
 	static void UnBindToOnAllEntitySpawned(const FAllEntitySpawned& Context);
 
 	UFUNCTION(BlueprintCallable,  Category = "Wave Manager")
-	void BindToOnLastEntityDead(const FLastEntityDead& Context,bool bUnique = true);
+	static void BindToOnLastEntityDead(const FLastEntityDead& Context,bool bUnique = true);
 	
 	UFUNCTION(BlueprintCallable,  Category = "Wave Manager")
-	void UnBindToOnLastEntityDead(const FLastEntityDead& Context);
+	static void UnBindToOnLastEntityDead(const FLastEntityDead& Context);
+
+	UFUNCTION(Category = "Wave Manager")
+	static void BindToOnResetWave(const FresetWave& Context,bool bUnique = true);
+
+	UFUNCTION(Category = "Wave Manager")
+	static void UnBindToOnResetWave(const FresetWave& Context);
 };

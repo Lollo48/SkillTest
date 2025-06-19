@@ -25,6 +25,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FLastEntityDeadDispatcher, AActor*, DeadActor);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FResetWaveDispatcher, int, WaveIndex);
+
 DECLARE_DYNAMIC_DELEGATE(FAllWaveClear);
 
 DECLARE_DYNAMIC_DELEGATE(FWaveClear);
@@ -36,6 +39,8 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FAllEntitySpawned, int, CountEnemy);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FLastEntityDead, AActor*, DeadActor);
 
 DECLARE_DYNAMIC_DELEGATE_OneParam(FEndWave,int , WaveIndex);
+
+DECLARE_DYNAMIC_DELEGATE_OneParam(FresetWave,int , WaveIndex);
 
 
 /**
@@ -66,8 +71,14 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FLastEntityDeadDispatcher OnLastEntityDead;
 	
+	UPROPERTY(BlueprintAssignable)
+	FResetWaveDispatcher OnResetWave;
+	
 	UFUNCTION()
 	int32 GetWaveIndex() const {return CurrentWaveIndex;}
+	
+	UFUNCTION()
+    int32 GetTotalWaveIndex() const {return TotalWaveIndex;}
 
 	UFUNCTION()
 	void IncreaseCurrentWaveIndex(int32 Increase) {CurrentWaveIndex += Increase;}
@@ -80,6 +91,9 @@ public:
 	
 	UFUNCTION()
 	virtual void TryStartWave();
+
+	UFUNCTION()
+	void ResetWave(int32 InWaveIndex,bool bWantsStartNewWave);
 	
 	void EntityDead(AActor* InEntityDead) override;
 
@@ -127,6 +141,12 @@ public:
 	UFUNCTION(Category = "Wave Manager")
 	void UnBindToOnLastEntityDead(const FLastEntityDead& Context);
 
+	UFUNCTION(Category = "Wave Manager")
+	void BindToOnResetWave(const FresetWave& Context,bool bUnique = true);
+
+	UFUNCTION(Category = "Wave Manager")
+	void UnBindToOnResetWave(const FresetWave& Context);
+	
 protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Wave System")
@@ -154,6 +174,9 @@ private:
 
 	UPROPERTY()
 	UWaveDataAsset* CurrentWave;
+	
+	UPROPERTY()
+	int32 TotalWaveIndex = 0;
 
 	UFUNCTION()
 	virtual void StartWave();

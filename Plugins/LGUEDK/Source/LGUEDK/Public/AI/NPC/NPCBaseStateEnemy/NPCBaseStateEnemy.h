@@ -23,6 +23,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 	FStateDead, AActor*, Target);
 
+class ANPCBaseStateEnemyController;
+
 UCLASS()
 class LGUEDK_API ANPCBaseStateEnemy : public ANPCBaseEnemy
 {
@@ -86,6 +88,18 @@ public:
 	
 	virtual void EnableEntity() override { Super::EnableEntity(); };
 	virtual void DisableEntity() override { Super::DisableEntity(); };
+
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "BaseStateEntityController")
+	ANPCBaseStateEnemyController* GetBaseStateEntityController() const;
+
+	UFUNCTION(BlueprintCallable)
+	FGameplayTag GetMyAreaTag() const { return MyAreaTag; }
+	UFUNCTION(BlueprintCallable)
+	void SetMyAreaTag(const FGameplayTag& InTag) { MyAreaTag = InTag; }
+	UFUNCTION(BlueprintCallable)
+	FGameplayTag GetMyTeamTag() const { return MyTeamTag; }
+	UFUNCTION(BlueprintCallable)
+	void SetMyTeamTag(const FGameplayTag& InTag) { MyTeamTag = InTag; }
 	
 protected:
 	
@@ -97,6 +111,12 @@ protected:
 
 	UPROPERTY()
 	EMovementActionState MovementActionState = EMovementActionState::Walking;
+
+	UPROPERTY()
+	FGameplayTag MyTeamTag;
+
+	UPROPERTY()
+	FGameplayTag MyAreaTag;
 
 	virtual void BeginPlay() override;
 
@@ -112,6 +132,10 @@ protected:
 	void OnEntityAttackBP(AActor* InAttackTarget);
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
 	void OnEntityDeadBP(AActor* InAttackTarget);
-	
+
+private:
+
+	UPROPERTY()
+	ANPCBaseStateEnemyController* BaseStateEnemyController;
 };
 

@@ -25,7 +25,7 @@ void UTriggerBaseSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
-	const UWorld* World = GetWorld();
+	UWorld* World = GetWorld();
 
 	if (!IsValid(World))
 	{
@@ -76,7 +76,7 @@ TArray<ABaseTrigger*> UTriggerBaseSubsystem::GetTriggerContainer(FGameplayTag In
 {
 	if (!TriggerMap.Contains(InGamePlayTag))
 	{
-		LGDebug::Error("Trigger Map doesn't exist", true);
+		//LGDebug::Error("Trigger Map doesn't exist", true);
 		return TArray<ABaseTrigger*>();
 	}
 	
@@ -92,7 +92,7 @@ void UTriggerBaseSubsystem::BindToOnEnable(const FGameplayTag& Name, const FEnab
 {
 	if (!TriggerMap.Contains(Name))
 	{
-		LGDebug::Warning("Map does not contain the key", true);
+		//LGDebug::Warning("Map does not contain the key", true);
 		return;
 	}
 
@@ -113,7 +113,7 @@ void UTriggerBaseSubsystem::BindAllToOnEnable(const FGameplayTag& Name,const FEn
 
 	if (!TriggerMap.Contains(Name))
 	{
-		LGDebug::Warning("Map does not contain the key", true);
+		//LGDebug::Warning("Map does not contain the key", true);
 		return;
 	}
 	
@@ -130,7 +130,7 @@ void UTriggerBaseSubsystem::UnBindToOnEnable(const FGameplayTag& Name, const FEn
 {
 	if (!TriggerMap.Contains(Name))
 	{
-		LGDebug::Warning("Map does not contain the key", true);
+		//LGDebug::Warning("Map does not contain the key", true);
 		return;
 	}
 
@@ -150,7 +150,7 @@ void UTriggerBaseSubsystem::UnBindAllToOnEnable(const FGameplayTag& Name, const 
 {
 	if (!TriggerMap.Contains(Name))
 	{
-		LGDebug::Warning("Map does not contain the key", true);
+		//LGDebug::Warning("Map does not contain the key", true);
 		return;
 	}
 	
@@ -167,7 +167,7 @@ void UTriggerBaseSubsystem::BindToOnDisable(const FGameplayTag& Name, const FDis
 {
 	if (!TriggerMap.Contains(Name))
 	{
-		LGDebug::Warning("Map does not contain the key", true);
+		//LGDebug::Warning("Map does not contain the key", true);
 		return;
 	}
 
@@ -186,7 +186,7 @@ void UTriggerBaseSubsystem::BindAllToOnDisable(const FGameplayTag& Name, const F
 {
 	if (!TriggerMap.Contains(Name))
 	{
-		LGDebug::Warning("Map does not contain the key", true);
+		//LGDebug::Warning("Map does not contain the key", true);
 		return;
 	}
 	
@@ -203,7 +203,7 @@ void UTriggerBaseSubsystem::UnBindToOnDisable(const FGameplayTag& Name, const FD
 {
 	if (!TriggerMap.Contains(Name))
 	{
-		LGDebug::Warning("Map does not contain the key", true);
+		//LGDebug::Warning("Map does not contain the key", true);
 		return;
 	}
 
@@ -222,7 +222,7 @@ void UTriggerBaseSubsystem::UnBindAllToOnDisable(const FGameplayTag& Name, const
 {
 	if (!TriggerMap.Contains(Name))
 	{
-		LGDebug::Warning("Map does not contain the key", true);
+		//LGDebug::Warning("Map does not contain the key", true);
 		return;
 	}
 	

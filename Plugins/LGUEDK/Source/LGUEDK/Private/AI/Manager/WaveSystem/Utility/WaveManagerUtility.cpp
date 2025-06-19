@@ -24,6 +24,11 @@ int32 UWaveManagerUtility::GetWaveIndex()
 	return  WaveManagerSubsystem->GetWaveIndex();
 }
 
+int32 UWaveManagerUtility::GetTotalWaveIndex()
+{
+	return WaveManagerSubsystem ->GetTotalWaveIndex();
+}
+
 void UWaveManagerUtility::IncreaseCurrentWaveIndex(int32 Increase)
 {
 	WaveManagerSubsystem->IncreaseCurrentWaveIndex(Increase);
@@ -47,6 +52,11 @@ void UWaveManagerUtility::TryStartWave()
 void UWaveManagerUtility::EntityDead(AActor* InEntityDead)
 {
 	WaveManagerSubsystem->EntityDead(InEntityDead);
+}
+
+void UWaveManagerUtility::ResetWave(int32 InWaveIndex, bool bWantsStartNewWave)
+{
+	WaveManagerSubsystem->ResetWave(InWaveIndex, bWantsStartNewWave);
 }
 
 void UWaveManagerUtility::BindToOnSpawnEntity(const FSpawnEntity& Context, bool bUnique)
@@ -127,6 +137,16 @@ void UWaveManagerUtility::BindToOnLastEntityDead(const FLastEntityDead& Context,
 void UWaveManagerUtility::UnBindToOnLastEntityDead(const FLastEntityDead& Context)
 {
 	WaveManagerSubsystem->UnBindToOnLastEntityDead(Context);
+}
+
+void UWaveManagerUtility::BindToOnResetWave(const FresetWave& Context, bool bUnique)
+{
+	WaveManagerSubsystem-> BindToOnResetWave(Context, bUnique);
+}
+
+void UWaveManagerUtility::UnBindToOnResetWave(const FresetWave& Context)
+{
+	WaveManagerSubsystem ->UnBindToOnResetWave(Context);
 }
 
 

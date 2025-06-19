@@ -28,6 +28,7 @@ AActor* USpawnManagerBaseSubsystem::SpawnEntity(TSubclassOf<AActor> ActorToSpawn
 
 void USpawnManagerBaseSubsystem::EntityDead(AActor* InEntityDead)
 {
+	//LGDebug::Log("AliveEnemies " +  FString::FromInt(AliveEnemies),true);
 	AliveEnemies--;
 	OnEntityDead.Broadcast(InEntityDead,AliveEnemies);
 	EntityDeadBP(InEntityDead);

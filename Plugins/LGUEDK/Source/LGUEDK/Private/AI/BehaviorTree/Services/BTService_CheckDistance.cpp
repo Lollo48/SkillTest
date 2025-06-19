@@ -58,26 +58,26 @@ void UBTService_CheckDistance::TickNode(UBehaviorTreeComponent& OwnerComp, uint8
 		AttackTarget = Cast<AActor>(CachedBlackboardComp->GetValueAsObject(AttackTargetKey.SelectedKeyName));
 	}
 
-	if (!NavSystem)
-	{
-		LGDebug::Warning("NavSystem INVALID ", true);
-		return;
-	}
-	
-	UNavigationPath* NavPath = NavSystem->FindPathToLocationSynchronously(GetWorld(), ControlledPawn->GetActorLocation(), AttackTarget->GetActorLocation());
-
-	if (!NavPath)
-	{
-		LGDebug::Warning("NavPath INVALID ", true);
-		return;
-	}
-	
-	if (NavPath->IsPartial())
-	{
-		OnCantReachPlayer(OwnerComp);
-		//LGDebug::Log("CantReachPlayer",true);
-		return;
-	}
+	// if (!NavSystem)
+	// {
+	// 	LGDebug::Warning("NavSystem INVALID ", true);
+	// 	return;
+	// }
+	//
+	//UNavigationPath* NavPath = NavSystem->FindPathToLocationSynchronously(GetWorld(), ControlledPawn->GetActorLocation(), AttackTarget->GetActorLocation());
+	//
+	// if (!NavPath)
+	// {
+	// 	LGDebug::Warning("NavPath INVALID ", true);
+	// 	return;
+	// }
+	//
+	// if (NavPath->IsPartial())
+	// {
+	// 	OnCantReachPlayer(OwnerComp);
+	// 	//LGDebug::Log("CantReachPlayer",true);
+	// 	return;
+	// }
 	
 	float Distance = CachedBlackboardComp->GetValueAsFloat(DistanceFromPlayerKey.SelectedKeyName);
 	

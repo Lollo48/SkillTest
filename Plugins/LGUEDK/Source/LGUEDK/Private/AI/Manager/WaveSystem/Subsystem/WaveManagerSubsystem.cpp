@@ -36,6 +36,7 @@ void UWaveManagerSubsystem::SetCurrentWavesByTag(FGameplayTag InWaveTag)
 	{
 		CurrentWaves = Waves[InWaveTag].Waves;
 		CurrentWaveIndex = 0;
+		TotalWaveIndex = CurrentWaves.Num();
 	}
 }
 
@@ -58,10 +59,10 @@ void UWaveManagerSubsystem::SpawnWave()
 			{
 				for (const FEnemyQuantityInfo& EnemyQuantityInfo : EnemyInfo.ListEnemyToSpawn)
 				{
-					const TArray<TSubclassOf<ANPCBase>>& EnemyClassArray = EnemyQuantityInfo.EnemyClasses;
+					const TArray<TSubclassOf<AActor>>& EnemyClassArray = EnemyQuantityInfo.EnemyClasses;
 					int Quantity = EnemyQuantityInfo.Quantity;
 					
-					for (const TSubclassOf<ANPCBase>& EnemyClass : EnemyClassArray)
+					for (const TSubclassOf<AActor>& EnemyClass : EnemyClassArray)
 					{
 						for (int i = 0; i < Quantity; i++)
 						{
@@ -87,20 +88,29 @@ void UWaveManagerSubsystem::TryStartWave()
 {
 	if (CurrentWaves.Num() <= 0)
 	{
-		LGDebug::Log("CurrentWaves è vuoto!", true);
+		//LGDebug::Log("CurrentWaves è vuoto!", true);
+		return;
+	}
+
+	if (CurrentWaveIndex >= CurrentWaves.Num())
+	{
+		OnAllWaveClear.Broadcast();
+		//LGDebug::Log("WAVE FINITE COMPLIMENTI",true);
+		// LGDebug::Log("CurrentWaveIndex " +  FString::FromInt(CurrentWaveIndex),true);
+		// LGDebug::Log("CurrentWaves.Num() " +  FString::FromInt(CurrentWaves.Num()),true);
 		return;
 	}
 	
 	if (!CurrentWaves.IsValidIndex(CurrentWaveIndex))
 	{
-		LGDebug::Log(FString::Printf(TEXT("Indice %d fuori range! Max: %d"), CurrentWaveIndex, CurrentWaves.Num() - 1), true);
+		//LGDebug::Log(FString::Printf(TEXT("Indice %d fuori range! Max: %d"), CurrentWaveIndex, CurrentWaves.Num() - 1), true);
 		return;
 	}
 	
 	CurrentWave = CurrentWaves[CurrentWaveIndex];
 	if (!CurrentWave)
 	{
-		LGDebug::Log("Wave corrente è nullptr!", true);
+		//LGDebug::Log("Wave corrente è nullptr!", true);
 		return;
 	}
 	
@@ -110,12 +120,17 @@ void UWaveManagerSubsystem::TryStartWave()
 	if (CurrentWaveIndex < CurrentWaves.Num())
 	{
 		StartWave();
+		//LGDebug::Log("StartWave", true);
 	}
-	else
-	{
-		OnAllWaveClear.Broadcast();
-		//LGDebug::Log("WAVE FINITE COMPLIMENTI",true);
-	}
+}
+
+void UWaveManagerSubsystem::ResetWave(int32 InWaveIndex,bool bWantsStartNewWave)
+{
+	OnResetWave.Broadcast(CurrentWaveIndex);
+	CurrentWaveIndex = InWaveIndex;
+	AliveEnemies = 0;
+	if(bWantsStartNewWave)
+		TryStartWave();
 }
 
 void UWaveManagerSubsystem::EntityDead(AActor* InEntityDead)
@@ -124,7 +139,7 @@ void UWaveManagerSubsystem::EntityDead(AActor* InEntityDead)
 	
 	if (AliveEnemies <= 0)
 	{
-		OnEndWave.Broadcast(CurrentWaveIndex);
+		OnEndWave.Broadcast(AliveEnemies);
 		AliveEnemies = 0;
 		OnWaveClear.Broadcast();
 		OnLastEntityDead.Broadcast(InEntityDead);
@@ -226,6 +241,22 @@ void UWaveManagerSubsystem::BindToOnLastEntityDead(const FLastEntityDead& Contex
 void UWaveManagerSubsystem::UnBindToOnLastEntityDead(const FLastEntityDead& Context)
 {
 	OnLastEntityDead.Remove(Context);
+}
+
+void UWaveManagerSubsystem::BindToOnResetWave(const FresetWave& Context, bool bUnique)
+{
+	if (bUnique)
+	{
+		OnResetWave.AddUnique(Context);
+		return;
+	}
+
+	OnResetWave.Add(Context);
+}
+
+void UWaveManagerSubsystem::UnBindToOnResetWave(const FresetWave& Context)
+{
+	OnResetWave.Remove(Context);
 }
 
 void UWaveManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)

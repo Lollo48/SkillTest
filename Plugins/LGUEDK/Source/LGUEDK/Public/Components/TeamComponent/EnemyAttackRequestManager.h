@@ -21,7 +21,7 @@ public:
 	TMap<AActor*,int> StoredTokens;
 	
 	UFUNCTION(BlueprintPure,BlueprintCallable)
-	int GetTeamIndex() const {return TeamIndex;}
+	FGameplayTag GetTeamTag() const {return MyTeam;}
 
 	UFUNCTION(BlueprintCallable)
 	bool TryGetToken(int TokenCost);
@@ -39,22 +39,19 @@ public:
 	void ReturnAllTokens();
 	
 	UFUNCTION()
-	void SetTeamIndex(int NewTeamIndex) {TeamIndex = NewTeamIndex;}
+	void SetTeamIndex(FGameplayTag NewTeamIndex) {MyTeam = NewTeamIndex;}
 
-	
 protected:
+	
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team")
-	int TeamIndex;
+	FGameplayTag MyTeam;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team")
 	int MaxTokens;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Team")
 	int CurrentTokens;
-private:
 	
-
-
 };

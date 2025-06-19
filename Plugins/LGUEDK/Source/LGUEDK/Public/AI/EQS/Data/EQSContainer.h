@@ -12,6 +12,6 @@ struct LGUEDK_API FEQSContainer
 	GENERATED_BODY()
 	
 	TArray<FVector> Points;
-
+	
 	FEQSContainer(): Points(TArray<FVector>()){}
 };

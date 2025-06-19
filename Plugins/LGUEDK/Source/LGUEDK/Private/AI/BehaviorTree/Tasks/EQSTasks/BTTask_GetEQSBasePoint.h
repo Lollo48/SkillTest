@@ -39,29 +39,16 @@ protected:
 	
 	virtual void InitTask(UBehaviorTreeComponent& OwnerComp);
 	
-	bool IsHittingSomething(const FVector& Start, const FVector& End) const;
-
-	bool IsPointFree(const FVector& Point) const;
-	
 	UPROPERTY()
 	AActor* AttackTarget;
 	UPROPERTY()
 	ANPCBaseStateEnemy* ControlledPawn;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
-	TEnumAsByte<ECollisionChannel> ObjectTypeChannelPointFree;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
-	TEnumAsByte<ECollisionChannel> CollisionChannelIsHittingSomething;
 	
 	UPROPERTY()
 	float MinDistance;
 	
 	UPROPERTY()
 	float MaxDistance;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
-	float DistanceBetweenEnemyRadius;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI", meta=(AllowPrivateAccess = "true"))
 	bool bShowDebug;

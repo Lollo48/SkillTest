@@ -2,6 +2,7 @@
 
 
 #include "LGUEDK/Public/AI/NPC/NPCBase/NPCBase.h"
+
 #include "AI/NPC/NPCBase/NPCBaseController.h"
 #include "Components/CapsuleComponent.h"
 
@@ -29,34 +30,49 @@ void ANPCBase::Init()
 {
 	MeshLocation = GetMesh()->GetRelativeLocation();
 	MeshRotation = GetMesh()->GetRelativeRotation();
-	SetEntityCollision();
+	MeshScale = GetMesh()->GetRelativeScale3D();
+	ResetEntityCollision();
+
+	BaseController = Cast<ANPCBaseController>(GetController());
+	if (!IsValid(BaseController))
+	{
+		UE_LOG(LogTemp, Error, TEXT("No controller"));
+		return;
+	}
+	
 	InitBP();
 	SetIsInitialize(true);
 }
 
 void ANPCBase::EnableEntity()
 {
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (!AIController)return;
-	if (!AIController->GetBrainComponent())return;
-	
-	AIController->GetBrainComponent()->StartLogic();
 	EnableEntityBP();
 	SetIsEnable(true);
+	
+	if (!IsValid(BaseController))return;
+	BaseController->GetBrainComponent()->StartLogic();
 }
 
 void ANPCBase::DisableEntity()
 {
-	AAIController* AIController = Cast<AAIController>(GetController());
-	if (!AIController)return;
-	if (!AIController->GetBrainComponent())return;
-	
-	AIController->GetBrainComponent()->StopLogic("Event");
 	DisableEntityBP();
 	SetIsEnable(false);
+
+	if (!IsValid(BaseController))return;
+	BaseController->GetBrainComponent()->StopLogic("Event");
 }
 
-void ANPCBase::SetEntityCollision()
+ANPCBaseController* ANPCBase::GetEntityController() const
+{
+	if (!IsValid(BaseController))
+	{
+		UE_LOG(LogTemp, Error, TEXT("No controller"));
+		return nullptr;
+	}
+	return BaseController;
+}
+
+void ANPCBase::ResetEntityCollision()
 {
 	GetMesh()->SetSimulatePhysics(false);
 	GetMesh()->SetCollisionProfileName(EnemyMeshCollisionProfileName);
@@ -66,7 +82,7 @@ void ANPCBase::SetEntityCollision()
 	GetCapsuleComponent()->SetCollisionObjectType(CollisionCapsuleChannel);
 }
 
-void ANPCBase::SetEntityTransform()
+void ANPCBase::ResetEntityTransform()
 {
 	GetMesh()->SetRelativeLocation(MeshLocation);
 	GetMesh()->SetRelativeRotation(MeshRotation);

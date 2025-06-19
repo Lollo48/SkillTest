@@ -14,22 +14,26 @@ ANPCBaseStateEnemyController::ANPCBaseStateEnemyController(const FObjectInitiali
 	
 }
 
+ANPCBaseStateEnemy* ANPCBaseStateEnemyController::GetBaseStateControlledEntity() const
+{
+	if (!IsValid(BaseStateControlledEntity))
+	{
+		UE_LOG(LogTemp, Error, TEXT("No controlled pawn"));
+		return nullptr;
+	}
+	return BaseStateControlledEntity;
+}
+
 void ANPCBaseStateEnemyController::SetStateAsPassive()
 {
 	SetCurrentControllerEnemyState(EEnemyState::Passive);
 	Super::SetStateAsPassive();
-
-	if (!IsValid(Entity))return;
-	Entity->OnEntityPassive();
 }
 
 void ANPCBaseStateEnemyController::SetStateAsPatrolling()
 {
 	SetCurrentControllerEnemyState(EEnemyState::Patrolling);
 	Super::SetStateAsPatrolling();
-
-	if (!IsValid(Entity))return;
-	Entity->OnEntityPatrolling();
 }
 
 void ANPCBaseStateEnemyController::SetStateAsInvestigating()
@@ -37,8 +41,8 @@ void ANPCBaseStateEnemyController::SetStateAsInvestigating()
 	SetCurrentControllerEnemyState(EEnemyState::Investigating);
 	SetStateAsInvestigatingBP();
 
-	if (!IsValid(Entity))return;
-	Entity->OnEntityInvestigating();
+	if (!IsValid(BaseStateControlledEntity))return;
+	BaseStateControlledEntity->OnEntityInvestigating();
 }
 
 void ANPCBaseStateEnemyController::SetStateAsChasing(AActor* InAttackTarget)
@@ -46,8 +50,8 @@ void ANPCBaseStateEnemyController::SetStateAsChasing(AActor* InAttackTarget)
 	SetCurrentControllerEnemyState(EEnemyState::Chasing);
 	SetStateAsChasingBP(InAttackTarget);
 
-	if (!IsValid(Entity))return;
-	Entity->OnEntityChasing(InAttackTarget);
+	if (!IsValid(BaseStateControlledEntity))return;
+	BaseStateControlledEntity->OnEntityChasing(InAttackTarget);
 }
 
 void ANPCBaseStateEnemyController::SetStateAsAttacking(AActor* InAttackTarget)
@@ -55,8 +59,17 @@ void ANPCBaseStateEnemyController::SetStateAsAttacking(AActor* InAttackTarget)
 	SetCurrentControllerEnemyState(EEnemyState::Attacking);
 	SetStateAsAttackingBP(InAttackTarget);
 
-	if (!IsValid(Entity))return;
-	Entity->OnEntityAttack(InAttackTarget);
+	if (!IsValid(BaseStateControlledEntity))return;
+	BaseStateControlledEntity->OnEntityAttack(InAttackTarget);
+}
+
+void ANPCBaseStateEnemyController::SetStateAsPending(AActor* InAttackTarget)
+{
+	SetCurrentControllerEnemyState(EEnemyState::Pending);
+	SetStateAsPendingBP(InAttackTarget);
+
+	if (!IsValid(BaseStateControlledEntity))return;
+	BaseStateControlledEntity->OnEntityPending(InAttackTarget);
 }
 
 void ANPCBaseStateEnemyController::SetStateAsDead(AActor* InAttackTarget)
@@ -64,7 +77,8 @@ void ANPCBaseStateEnemyController::SetStateAsDead(AActor* InAttackTarget)
 	SetCurrentControllerEnemyState(EEnemyState::Dead);
 	SetStateAsDeadBP(InAttackTarget);
 
-	
+	if (!IsValid(BaseStateControlledEntity))return;
+	BaseStateControlledEntity->OnEntityDead(InAttackTarget);
 }
 
 void ANPCBaseStateEnemyController::BeginPlay()
@@ -72,10 +86,9 @@ void ANPCBaseStateEnemyController::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ANPCBaseStateEnemyController::InitializeEnemyBase()
+void ANPCBaseStateEnemyController::InitializeControlledEntity()
 {
-	Super::InitializeEnemyBase();
-	Entity = Cast<ANPCBaseStateEnemy>(GetPawn());
+	BaseStateControlledEntity = Cast<ANPCBaseStateEnemy>(GetControlledEntity());
 }
 
 

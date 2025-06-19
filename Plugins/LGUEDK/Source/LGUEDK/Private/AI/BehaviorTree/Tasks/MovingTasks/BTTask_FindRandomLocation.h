@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+#include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_FindRandomLocation.generated.h"
 
 /**
@@ -13,7 +13,6 @@ UCLASS()
 class LGUEDK_API UBTTask_FindRandomLocation : public UBTTaskNode
 {
 	GENERATED_BODY()
-
 public:
 	
 	explicit UBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer);
@@ -29,5 +28,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Blackboard")
 	FBlackboardKeySelector InitialPositionKey;
-
 };

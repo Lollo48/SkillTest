@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "NPCBaseEnemy.h"
 #include "AI/NPC/NPCBase/NPCBaseController.h"
+#include "AI/NPC/NPCData/PerceptionSystemControllerData.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISenseConfig_Damage.h"
 #include "Perception/AISenseConfig_Hearing.h"
@@ -12,7 +13,6 @@
 #include "Utility/LGDebug.h"
 #include "NPCPerceptionSystemController.generated.h"
 
-class ANPCBaseEnemy;
 
 UCLASS()
 class LGUEDK_API ANPCPerceptionSystemController : public ANPCBaseController
@@ -23,6 +23,9 @@ public:
 	
 	explicit ANPCPerceptionSystemController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(Blueprintable,BlueprintCallable,blueprintPure)
+	ANPCBaseEnemy* GetBaseControlledEntity() const ;
+	
 	UFUNCTION(BlueprintCallable, Category = "State")
 	virtual void SetStateAsPassive();
 	
@@ -30,39 +33,6 @@ public:
 	virtual void SetStateAsPatrolling();
 
 protected:
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Sense")
-	bool CanSee;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Sense")
-	bool CanHear;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Sense")
-	bool CanTakeDamage;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Sight", meta = (ClampMin = "0.0", UIMin = "0.0", EditCondition = "CanSee"))
-	float SightRadius = 2000.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Sight", meta = (ClampMin = "0.0", UIMin = "0.0", EditCondition = "CanSee"))
-	float LoseSightRadius = 2500.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Sight", meta = (ClampMin = "0.0", UIMin = "0.0", ClampMax = "180.0", UIMax = "180.0", EditCondition = "CanSee"))
-	float PeripheralVisionAngleDegrees = 90.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Sight", meta = (ClampMin = "0.0", UIMin = "0.0", EditCondition = "CanSee"))
-	float AutoSuccessRangeFromLastSeenLocation = 520.0f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Sight", meta = (ClampMin = "0.0", UIMin = "0.0", EditCondition = "CanSee"))
-	float SightMaxAge = 5.0f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Hearing", meta = (ClampMin = "0.0", UIMin = "0.0", EditCondition = "CanHear"))
-	float HearingRange = 3000.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Hearing", meta = (ClampMin = "0.0", UIMin = "0.0", EditCondition = "CanHear"))
-	float HearingMaxAge = 5.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Damage", meta = (ClampMin = "0.0", UIMin = "0.0", EditCondition = "CanTakeDamage"))
-	float DamageMaxAge = 5.0f;
 	
 	FTimerHandle LostSightTimerHandle;
 	
@@ -74,7 +44,7 @@ protected:
 	
 	virtual void OnPossess(APawn* InPawn) override;
 
-	virtual void InitializeEnemyBase() override {Super::InitializeEnemyBase();} 
+	virtual void InitializeControlledEntity() override;
 	
 	virtual void InitializeBlackboardValues() override;
 
@@ -83,11 +53,11 @@ protected:
 	virtual void CustomController() override{Super::CustomController();};
 	
 	UFUNCTION()
-	virtual void HandleSight(AActor* Actor, FAIStimulus Stimulus) {if (!bIsEnabled)return; };
+	virtual void HandleSight(AActor* Actor, FAIStimulus Stimulus) {if (!GetIsEnable())return; };
 	UFUNCTION()
-	virtual void HandleHear(AActor* Actor, FAIStimulus Stimulus) {if (!bIsEnabled)return; };
+	virtual void HandleHear(AActor* Actor, FAIStimulus Stimulus) {if (!GetIsEnable())return; };
 	UFUNCTION()
-	virtual void HandleDamage(AActor* Actor, FAIStimulus Stimulus) {if (!bIsEnabled)return; };
+	virtual void HandleDamage(AActor* Actor, FAIStimulus Stimulus) {if (!GetIsEnable())return; };
 	
 	UFUNCTION()
 	virtual void OnLostSight() {};
@@ -123,6 +93,14 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
 	void SetStateAsPatrollingBP();
+
+private:
+	
+	UPROPERTY()
+	ANPCBaseEnemy* BaseControlledEntity;
+
+	UPROPERTY(EditAnywhere,Category = "PerceptionSystemControllerData")
+	UPerceptionSystemControllerData* PerceptionSystemControllerData;
 	
 };
 

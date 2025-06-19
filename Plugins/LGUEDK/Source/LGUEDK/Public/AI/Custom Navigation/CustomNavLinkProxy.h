@@ -16,7 +16,6 @@ public:
 	ACustomNavLinkProxy();
 	
 	virtual void BeginPlay() override;
-
 	
 	UFUNCTION(BlueprintPure, Category =  "Custom Nav Link")
 	bool IsAvailable() const;
@@ -25,21 +24,32 @@ public:
 	void MarkAsOccupied(float OccupyDuration = 1.5f);
 	
 	UFUNCTION(BlueprintCallable, Category = "Custom Nav Link")
-	FVector FindValidDestination(const FVector& OriginalDestination,const int32& MaxAttempts,bool& bDebug);
+	bool FindValidDestination(const FVector& OriginalDestination);
+
+	UFUNCTION(BlueprintCallable, Category = "Custom Nav Link")
+	void EnableCollider(AActor* ActorToEnableCollider);
+	
+protected:
+	
+	UPROPERTY(BlueprintReadOnly,Category="WorldSubsystem ControllSettings")
+	FVector ValidPosition;
 	
 private:
+	
 	UPROPERTY(EditAnywhere, Category = "Custom Nav Link")
 	TEnumAsByte<ENavLinkDirection::Type> AINavLinkDirection;
+
+	UPROPERTY(EditDefaultsOnly,Category="WorldSubsystem ControllSettings")
+	float DistanceBetweenEnemyRadius;
+
+	UPROPERTY(EditDefaultsOnly,Category="WorldSubsystem ControllSettings")
+	TEnumAsByte<ECollisionChannel> ObjectTypeChannelPointFree;
+
+	bool IsPointFree(const FVector& Point) const;
 	
 	bool bIsOccupied;
 	
-	
 	FTimerHandle OccupyTimerHandle;
-
-	float JumpHeightRequired;
-	
-	UFUNCTION(BlueprintCallable, Category = "Custom Nav Link")
-	bool CheckJumpHeightRequired(AActor* Pawn) const;
 	
 	void Release();
 

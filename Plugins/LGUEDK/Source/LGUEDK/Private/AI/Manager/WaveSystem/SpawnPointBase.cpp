@@ -25,10 +25,9 @@ void ASpawnPointBase::BeginPlay()
 {
 	Super::BeginPlay();
 	UWaveManagerUtility::InitSpawnPoint(this);
-	GeneratePoints();
 }
 
-void ASpawnPointBase::SpawnEnemy(TSubclassOf<ANPCBase>const& EnemyClass) 
+void ASpawnPointBase::SpawnEnemy(TSubclassOf<AActor>const& EnemyClass) 
 {
 	if (!EnemyClass)return;
 
@@ -78,7 +77,7 @@ void ASpawnPointBase::GeneratePoints()
 {
 	PossibleSpawnPoints = TArray<FVector>();
 	FVector SpawnLocation = GetActorLocation();
-	PossibleSpawnPoints = UEQSUtility::GenerateGridPoints(SpawnLocation,SpawnRadius,DistanceBetweenEnemies);
+	PossibleSpawnPoints = UEQSUtility::GetPoints(SpawnLocation, 100.f, SpawnRadius);
 }
 
 

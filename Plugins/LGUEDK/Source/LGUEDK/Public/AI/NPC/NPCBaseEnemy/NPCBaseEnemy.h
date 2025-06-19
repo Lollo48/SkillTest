@@ -9,6 +9,7 @@
 #include "AI/NPC/NPCData/NPCBaseEnemyDataAsset.h"
 #include "NPCBaseEnemy.generated.h"
 
+class ANPCPerceptionSystemController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(
 	FStatePassive);
@@ -31,6 +32,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FStatePatrolling OnStatePatrolling;
 
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "EntityPerceptionSystemController")
+	ANPCPerceptionSystemController* GetPerceptionSystemController() const;
+
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "On Enemy Passive"))
 	virtual void OnEntityPassive();
 
@@ -41,7 +45,7 @@ public:
 	void SetMovementSpeed(EMovementSpeed MovementSpeed) const;
 
 	UFUNCTION(BlueprintCallable , meta = (DisplayName = "Enemy State"))
-	EEnemyState GetState() const { return CurrentState; }
+	EEnemyState GetEntityState() const { return CurrentState; }
 	UFUNCTION(BlueprintCallable , meta = (DisplayName = "Enemy State"))
 	void SetEntityState(const EEnemyState NewState) { CurrentState = NewState; }
 
@@ -50,12 +54,12 @@ public:
 	
 protected:
 	
-	UPROPERTY(Blueprintable,EditAnywhere,BlueprintReadOnly,Category = "AI|Settings")
-	UNPCBaseEnemyDataAsset* NPCDataAsset;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = "AI|Settings")
+	UNPCBaseEnemyDataAsset* AIData;
 	
 	UPROPERTY(BlueprintReadOnly,Category = "AI|State")
 	EEnemyState CurrentState = EEnemyState::Patrolling;
-
+	
 	virtual void BeginPlay() override;
 
 	virtual void Init() override;
@@ -65,5 +69,10 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
 	void OnEntityPatrollingBP();
+
+private:
+
+	UPROPERTY()
+	ANPCPerceptionSystemController* PerceptionSystemController;
 	
 };

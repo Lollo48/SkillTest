@@ -13,13 +13,13 @@ struct LGUEDK_API FEnemyQuantityInfo
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawn")
-	TArray<TSubclassOf<ANPCBase>> EnemyClasses;
+	TArray<TSubclassOf<AActor>> EnemyClasses;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawn")
 	int32 Quantity;
 
 	FEnemyQuantityInfo(): Quantity(0)
 	{
-		EnemyClasses = TArray<TSubclassOf<ANPCBase>>();
+		EnemyClasses = TArray<TSubclassOf<AActor>>();
 	}
 };

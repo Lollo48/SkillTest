@@ -21,13 +21,13 @@ public:
 
 	static void Init(UTriggerBaseSubsystem* InTriggerSubsystem);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static UTriggerBaseSubsystem* GetTriggerBaseSubsystem(){return TriggerSubsystem;}
 
 	UFUNCTION(BlueprintCallable)
 	static void SetTriggerMap(ABaseTrigger* OutTriggers);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,BlueprintPure)
 	static TArray<ABaseTrigger*> GetTriggerContainer(FGameplayTag InGamePlayTag);
 
 	UFUNCTION(BlueprintCallable)

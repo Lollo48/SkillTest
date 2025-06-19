@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
 #include "AITargetInterface.generated.h"
 
@@ -29,5 +30,5 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	bool TryGetToken(int TokenCost);
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
-	int GetTeamIndex();
+	FGameplayTag GetTeamIndex();
 };

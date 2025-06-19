@@ -7,8 +7,6 @@
 #include "AI/NPC/NPCBaseEnemy/NPCPerceptionSystemController.h"
 #include "NPCBaseStateEnemyController.generated.h"
 
-class ANPCBaseStateEnemy;
-
 UCLASS()
 class LGUEDK_API ANPCBaseStateEnemyController : public ANPCPerceptionSystemController
 {
@@ -18,6 +16,9 @@ public:
 	
 	explicit ANPCBaseStateEnemyController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(Blueprintable,BlueprintCallable,blueprintPure)
+	ANPCBaseStateEnemy* GetBaseStateControlledEntity() const;
+
 	virtual void SetStateAsPassive() override;
 
 	virtual void SetStateAsPatrolling() override;
@@ -26,10 +27,13 @@ public:
 	virtual void SetStateAsInvestigating();
 
 	UFUNCTION(BlueprintCallable, Category = "State")
-	virtual void SetStateAsChasing(AActor* InAttackTarget) ;
+	virtual void SetStateAsChasing(AActor* InAttackTarget);
 	
 	UFUNCTION(BlueprintCallable, Category = "State")
-	virtual void SetStateAsAttacking(AActor* InAttackTarget) ;
+	virtual void SetStateAsAttacking(AActor* InAttackTarget);
+
+	UFUNCTION(BlueprintCallable, Category = "State")
+	virtual void SetStateAsPending(AActor* InAttackTarget);
 
 	UFUNCTION(BlueprintCallable, Category = "State")
 	virtual void SetStateAsDead(AActor* InAttackTarget);
@@ -37,7 +41,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "State")
 	virtual void SetInitialState(EEnemyState State){}
 
-	UFUNCTION(BlueprintCallable, Category = "State")
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "State")
 	EEnemyState GetCurrentControllerEnemyState() { return CurrentState; }
 
 	UFUNCTION(BlueprintCallable, Category = "State")
@@ -49,7 +53,7 @@ protected:
 
 	virtual void OnPossess(APawn* InPawn) override { Super::OnPossess(InPawn); };
 
-	virtual void InitializeEnemyBase() override;
+	virtual void InitializeControlledEntity() override;
 	
 	virtual void InitializeBlackboardValues() override { Super::InitializeBlackboardValues(); };
 
@@ -72,6 +76,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
 	void SetStateAsAttackingBP(AActor* InAttackTarget);
 	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
+	void SetStateAsPendingBP(AActor* InAttackTarget);
+	UFUNCTION(BlueprintImplementableEvent,Category = "AI|State")
 	void SetStateAsDeadBP(AActor* InAttackTarget);
 
 private:
@@ -80,6 +86,6 @@ private:
 	EEnemyState CurrentState;
 	
 	UPROPERTY()
-	ANPCBaseStateEnemy* Entity;
+	ANPCBaseStateEnemy* BaseStateControlledEntity;
 	
 };

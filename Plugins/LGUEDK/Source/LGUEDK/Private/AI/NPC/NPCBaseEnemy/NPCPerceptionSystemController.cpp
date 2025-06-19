@@ -27,28 +27,37 @@ ANPCPerceptionSystemController::ANPCPerceptionSystemController(const FObjectInit
 	DamageConfig = CreateDefaultSubobject<UAISenseConfig_Damage>(TEXT("DamageConfig"));
 }
 
+ANPCBaseEnemy* ANPCPerceptionSystemController::GetBaseControlledEntity() const
+{
+	if (!IsValid(BaseControlledEntity))
+	{
+		UE_LOG(LogTemp, Error, TEXT("No controlled pawn"));
+		return nullptr;
+	}
+	
+	return BaseControlledEntity;
+}
+
 void ANPCPerceptionSystemController::SetStateAsPassive()
 {
-	bIsEnabled = false;
+	SetIsEnable(false);
 	SetStateAsPassiveBP();
-	
-	if (!CanSee && !CanHear && !CanTakeDamage)return;
-	RemoveToPerceptionEvents();
-	AIPerceptionComponent->Deactivate();
-	AIPerceptionComponent->SetActive(false);
-	AIPerceptionComponent->SetComponentTickEnabled(false);
+
+	if (IsValid(BaseControlledEntity))
+	{
+		BaseControlledEntity->OnEntityPassive();
+	}
 }
 
 void ANPCPerceptionSystemController::SetStateAsPatrolling()
 {
-	bIsEnabled = true;
+	SetIsEnable(true);
 	SetStateAsPatrollingBP();
-	
-	if (!CanSee && !CanHear && !CanTakeDamage)return;
-	RegisterToPerceptionEvents();
-	AIPerceptionComponent->Activate();
-	AIPerceptionComponent->SetActive(true);
-	AIPerceptionComponent->SetComponentTickEnabled(true);
+
+	if (IsValid(BaseControlledEntity))
+	{
+		BaseControlledEntity->OnEntityPatrolling();
+	}
 }
 
 void ANPCPerceptionSystemController::BeginPlay()
@@ -59,9 +68,20 @@ void ANPCPerceptionSystemController::BeginPlay()
 void ANPCPerceptionSystemController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	if (!IsValid(AIPerceptionComponent))
+	{
+		UE_LOG(LogTemp, Error, TEXT("PerceptionSystemControllerData invalid"));
+		return;
+	}
 	
-	if (!CanSee && !CanHear && !CanTakeDamage)return;
 	SetUpPerceptionSystem();
+	RegisterToPerceptionEvents();
+}
+
+void ANPCPerceptionSystemController::InitializeControlledEntity()
+{
+	BaseControlledEntity = Cast<ANPCBaseEnemy>(GetControlledEntity());
 }
 
 void ANPCPerceptionSystemController::InitializeBlackboardValues()
@@ -71,12 +91,12 @@ void ANPCPerceptionSystemController::InitializeBlackboardValues()
 
 void ANPCPerceptionSystemController::RegisterToPerceptionEvents()
 {
-	if (CanSee)
-		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ANPCPerceptionSystemController::HandleSight);
-	if (CanHear)
-		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ANPCPerceptionSystemController::HandleHear);
-	if (CanTakeDamage)
-		AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this,&ANPCPerceptionSystemController::HandleDamage);
+	if (PerceptionSystemControllerData->CanSee)
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ANPCPerceptionSystemController::HandleSight);
+	if (PerceptionSystemControllerData->CanHear)
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ANPCPerceptionSystemController::HandleHear);
+	if (PerceptionSystemControllerData->CanTakeDamage)
+		AIPerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this,&ANPCPerceptionSystemController::HandleDamage);
 }
 
 void ANPCPerceptionSystemController::RemoveToPerceptionEvents()
@@ -86,11 +106,17 @@ void ANPCPerceptionSystemController::RemoveToPerceptionEvents()
 
 void ANPCPerceptionSystemController::SetUpPerceptionSystem()
 {
-	if (CanSee)
+	if (!IsValid(PerceptionSystemControllerData))
+	{
+		UE_LOG(LogTemp, Error, TEXT("PerceptionSystemControllerData invalid"));
+		return;
+	}
+	
+	if (PerceptionSystemControllerData->CanSee)
 		SetUpSightConfig();
-	if (CanHear)
+	if (PerceptionSystemControllerData->CanHear)
 		SetUpHearingConfig();
-	if (CanTakeDamage)
+	if (PerceptionSystemControllerData->CanTakeDamage)
 		SetUpDamageConfig();
 }
 
@@ -98,11 +124,11 @@ void ANPCPerceptionSystemController::SetUpSightConfig()
 {
 	if (SightConfig)
 	{
-		SightConfig->SightRadius = SightRadius;
-		SightConfig->LoseSightRadius = LoseSightRadius;
-		SightConfig->PeripheralVisionAngleDegrees = PeripheralVisionAngleDegrees;
-		SightConfig->AutoSuccessRangeFromLastSeenLocation = AutoSuccessRangeFromLastSeenLocation;
-		SightConfig->SetMaxAge(SightMaxAge);
+		SightConfig->SightRadius =PerceptionSystemControllerData->SightRadius;
+		SightConfig->LoseSightRadius = PerceptionSystemControllerData->LoseSightRadius;
+		SightConfig->PeripheralVisionAngleDegrees = PerceptionSystemControllerData->PeripheralVisionAngleDegrees;
+		SightConfig->AutoSuccessRangeFromLastSeenLocation = PerceptionSystemControllerData->AutoSuccessRangeFromLastSeenLocation;
+		SightConfig->SetMaxAge(PerceptionSystemControllerData->SightMaxAge);
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
@@ -118,8 +144,8 @@ void ANPCPerceptionSystemController::SetUpHearingConfig()
 	
 	if (HearingConfig)
 	{
-		HearingConfig->HearingRange = HearingRange;
-		HearingConfig->SetMaxAge(HearingMaxAge);
+		HearingConfig->HearingRange = PerceptionSystemControllerData->HearingRange;
+		HearingConfig->SetMaxAge(PerceptionSystemControllerData->HearingMaxAge);
 		HearingConfig->DetectionByAffiliation.bDetectEnemies = true;
 		HearingConfig->DetectionByAffiliation.bDetectFriendlies = true;
 		HearingConfig->DetectionByAffiliation.bDetectNeutrals = true;
@@ -133,7 +159,7 @@ void ANPCPerceptionSystemController::SetUpDamageConfig()
 	
 	if (DamageConfig)
 	{
-		DamageConfig->SetMaxAge(DamageMaxAge);
+		DamageConfig->SetMaxAge(PerceptionSystemControllerData->DamageMaxAge);
 		AIPerceptionComponent->ConfigureSense(*DamageConfig);
 	}
 }

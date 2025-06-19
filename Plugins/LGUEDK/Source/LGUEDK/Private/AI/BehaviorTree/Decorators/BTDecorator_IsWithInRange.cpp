@@ -4,9 +4,8 @@
 #include "BTDecorator_IsWithInRange.h"
 
 #include <string>
-
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Utility/LGDebug.h"
+
 
 UBTDecorator_IsWithInRange::UBTDecorator_IsWithInRange(FObjectInitializer const& ObjectInitializer)
 {
@@ -26,22 +25,11 @@ bool UBTDecorator_IsWithInRange::CalculateRawConditionValue(UBehaviorTreeCompone
 	{
 		return false;
 	}
-
-	const float MaxRange = BlackboardComp->GetValueAsFloat(MaxAttackRadiusKey.SelectedKeyName);
+	
 	const float MinRange = BlackboardComp->GetValueAsFloat(MinAttackRadiusKey.SelectedKeyName);
-	
 	float DistanceFromPlayer = BlackboardComp->GetValueAsFloat(DistanceFromPlayerKey.SelectedKeyName);
-
-	if (DistanceFromPlayer <= 0)
-	{
-		return true;
-	}
 	
-	//LGDebug::Log("DistanceFromPlayer: " + FString::SanitizeFloat(DistanceFromPlayer), true);
-	// LGDebug::Log("MaxRange: " + FString::SanitizeFloat(MaxRange), true);
-	// LGDebug::Log("MinRange: " + FString::SanitizeFloat(MinRange), true);
-	
-	if (DistanceFromPlayer > MaxRange)
+	if (DistanceFromPlayer < MinRange)
 	{
 		return true; 
 	}

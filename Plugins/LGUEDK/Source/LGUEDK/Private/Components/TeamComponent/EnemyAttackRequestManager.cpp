@@ -11,7 +11,6 @@ UEnemyAttackRequestManager::UEnemyAttackRequestManager()
 
 }
 
-
 void UEnemyAttackRequestManager::BeginPlay()
 {
 	Super::BeginPlay();
